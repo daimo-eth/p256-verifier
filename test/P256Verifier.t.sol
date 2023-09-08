@@ -4,7 +4,7 @@ pragma solidity 0.8.19;
 import {Test, console2} from "forge-std/Test.sol";
 import {P256Verifier} from "../src/P256Verifier.sol";
 
-contract CounterTest is Test {
+contract P256VerifierTest is Test {
     P256Verifier public verifier;
 
     function setUp() public {
