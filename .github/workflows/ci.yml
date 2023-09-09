@@ -28,6 +28,8 @@ jobs:
 
       - run: |
           forge test --via-ir -vv
+          forge coverage --via-ir --ir-minimum --report lcov
+          git diff --exit-code
         id: test
 
   test-generate-vectors:

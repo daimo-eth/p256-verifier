@@ -1,5 +1,6 @@
 import fs from "fs";
 import crypto from "crypto";
+import { p256 } from "@noble/curves/p256";
 
 interface Vector {
   x: string;
@@ -39,23 +40,30 @@ async function main() {
       {
         kty: "EC",
         crv: "P-256",
-        x: Buffer.from(vector.x, "hex").toString("base64url"),
-        y: Buffer.from(vector.y, "hex").toString("base64url"),
+        x: x.toString("base64url"),
+        y: y.toString("base64url"),
       },
       { name: "ECDSA", namedCurve: "P-256" },
       false,
       ["verify"]
     );
     const sig = new Uint8Array([...r, ...s]);
-    const result = await crypto.subtle.verify(
+    const resultSubtle = await crypto.subtle.verify(
       { name: "ECDSA", hash: "SHA-256" },
       key,
       sig,
       msg
     );
+    assert(resultSubtle === vector.valid, "SubtleCrypto " + vector.comment);
 
-    // Check result
-    assert(result === vector.valid, vector.comment);
+    // Verify signature using @noble/curves
+    const pub = new Uint8Array([0x04, ...x, ...y]);
+    const resultNoble = p256.verify(sig, hash, pub);
+    if (resultNoble !== vector.valid) {
+      console.log(
+        `@noble/curves returned ${resultNoble}, expected ${vector.valid} for ${vector.comment}`
+      );
+    }
   }
 }
 
