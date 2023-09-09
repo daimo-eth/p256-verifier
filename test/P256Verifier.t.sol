@@ -94,10 +94,17 @@ contract P256VerifierTest is Test {
                 console2.log("ACCEPTABLE ", comment, ": we return ", result);
                 continue; // Don't fail test either way
             }
-            if (result != expected) {
-                console2.log("FAIL ", comment, ": we return ", result);
-            }
-            assertEq(result, expected, comment);
+            string memory err = string(
+                abi.encodePacked(
+                    "exp ",
+                    expected ? "1" : "0",
+                    " we return ",
+                    result ? "1" : "0",
+                    ": ",
+                    comment
+                )
+            );
+            assertTrue(result == expected, err);
         }
     }
 }
