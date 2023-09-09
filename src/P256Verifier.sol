@@ -97,7 +97,7 @@ contract P256Verifier {
             scalar_u,
             scalar_v
         );
-        return r_x == r && mulmuladd_success;
+        return r_x % n == r && mulmuladd_success;
     }
 
     /**
