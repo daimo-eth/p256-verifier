@@ -80,25 +80,16 @@ contract P256VerifierTest is Test {
             uint256 r = vector.readUint(".r");
             uint256 s = vector.readUint(".s");
             bytes32 hash = vector.readBytes32(".hash");
-            string memory expectedResult = vector.readString(".result");
+            bool expected = vector.readBool(".valid");
             string memory comment = vector.readString(".comment");
-
-            bool expected = keccak256(abi.encodePacked(expectedResult)) ==
-                keccak256("valid");
-            bool allowEither = keccak256(abi.encodePacked(expectedResult)) ==
-                keccak256("acceptable");
 
             bool result = evaluate(hash, r, s, x, y);
 
-            if (allowEither) {
-                console2.log("ACCEPTABLE ", comment, ": we return ", result);
-                continue; // Don't fail test either way
-            }
             string memory err = string(
                 abi.encodePacked(
                     "exp ",
                     expected ? "1" : "0",
-                    " we return ",
+                    ", we return ",
                     result ? "1" : "0",
                     ": ",
                     comment

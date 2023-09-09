@@ -7,7 +7,7 @@ interface Vector {
   r: string;
   s: string;
   hash: string;
-  result: "valid" | "invalid" | "acceptable";
+  valid: boolean;
   msg: string;
   comment: string;
 }
@@ -55,14 +55,7 @@ async function main() {
     );
 
     // Check result
-    if (vector.result === "acceptable") {
-      console.log(
-        `ACCEPTABLE ${vector.comment}: SubtleCrypto returns ${result}`
-      );
-      continue;
-    }
-    const expected = vector.result === "valid";
-    assert(result === expected, vector.comment);
+    assert(result === vector.valid, vector.comment);
   }
 }
 

@@ -82,6 +82,10 @@ async function extractVectors(sourceName: string, sourceObj: any) {
 
       assert(["valid", "invalid", "acceptable"].includes(result), result);
 
+      // "acceptable" means Wycheproof doesn't say either result is mandatory.
+      // We have two "acceptable" vectors, both valid according to SubtleCrypto.
+      const valid = result === "valid" || result === "acceptable";
+
       // calculate SHA256 hash of msgBytes
       const msgBytes = Buffer.from(msg, "hex");
       const msgHash = Buffer.from(await crypto.subtle.digest(sha, msgBytes));
@@ -92,7 +96,7 @@ async function extractVectors(sourceName: string, sourceObj: any) {
         r,
         s,
         hash: msgHash.toString("hex"),
-        result,
+        valid,
         msg,
         comment: `${testStr}: ${comment}`,
       });
