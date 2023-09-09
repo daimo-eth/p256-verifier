@@ -17,5 +17,13 @@ Run `foundryup` to ensure you have the latest foundry. Then,
 ```
 git clone --recurse-submodules git@github.com:daimo-eth/eip-7212
 cd eip-7212
-forge test
+forge test --via-ir -vv
+```
+
+To regenerate test vectors,
+
+```
+cd test-vectors
+npm i
+npm start
 ```
