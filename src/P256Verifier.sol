@@ -185,8 +185,6 @@ contract P256Verifier {
                 (TX, TY) = (HX, HY);
             }
 
-            // invariant(zz != 0);
-
             (X, Y, zz, zzz) = ecZZ_dadd_affine(X, Y, zz, zzz, TX, TY);
         }
 
@@ -256,16 +254,18 @@ contract P256Verifier {
         uint256 x2,
         uint256 y2
     ) internal pure returns (uint256 x3, uint256 y3, uint256 zz3, uint256 zzz3) {
-        if (y1 == 0) {
-            return ec_PointAtInf();
-        } else if (y2 == 0) {
+        if (y2 == 0) { // (X2, Y2) is point at infinity
+            if (zz1 == 0 && zzz1 == 0) return ecZZ_PointAtInf();
             return (x1, y1, zz1, zzz1);
+        } else if (zz1 == 0 && zzz1 == 0) { // (X1, Y1) is point at infinity
+            return (x2, y2, 1, 1);
         }
 
         uint256 comp_R = addmod(mulmod(y2, zzz1, p), p - y1, p); // R = S2 - y1 = y2*zzz1 - y1
         uint256 comp_P = addmod(mulmod(x2, zz1, p), p - x1, p); // P = U2 - x1 = x2*zz1 - x1
 
         if (comp_P != 0) { // X1 != X2
+            // invariant(x1 != x2);
             uint256 comp_PP = mulmod(comp_P, comp_P, p); // PP = P^2
             uint256 comp_PPP = mulmod(comp_PP, comp_P, p); // PPP = P*PP
             zz3 = mulmod(zz1, comp_PP, p); //// ZZ3 = ZZ1*PP
@@ -282,10 +282,13 @@ contract P256Verifier {
                 p
             ); // R*(Q-x3) - y1*PPP
         } else if (comp_R == 0) { // X1 == X2 and Y1 == Y2
+            // invariant(x1 == x2 && y1 == y2);
+
             // Must be affine because (X2, Y2) is affine.
-            (x3, y3, zz3, zzz3) = ecZZ_double_affine(x1, y1);
-        } else {
-            (x3, y3, zz3, zzz3) = ec_PointAtInf();
+            (x3, y3, zz3, zzz3) = ecZZ_double_affine(x2, y2);
+        } else { // X1 == X2 and Y1 == -Y2
+            // invariant(x1 == x2 && y1 == p - y2);
+            (x3, y3, zz3, zzz3) = ecZZ_PointAtInf();
         }
 
         return (x3, y3, zz3, zzz3);
@@ -298,8 +301,8 @@ contract P256Verifier {
      */
     function ecZZ_double_zz(uint256 x1,
         uint256 y1, uint256 zz1, uint256 zzz1) internal pure returns (uint256 x3, uint256 y3, uint256 zz3, uint256 zzz3) {
+        if (zz1 == 0 && zzz1 == 0) return ecZZ_PointAtInf();
         if (zz1 == 1 && zzz1 == 1) return ecZZ_double_affine(x1, y1);
-        if (y1 == 0) return ec_PointAtInf();
     
         uint256 comp_U = mulmod(2, y1, p); // U = 2*Y1
         uint256 comp_V = mulmod(comp_U, comp_U, p); // V = U^2
@@ -320,7 +323,7 @@ contract P256Verifier {
      */
     function ecZZ_double_affine(uint256 x1,
         uint256 y1) internal pure returns (uint256 x3, uint256 y3, uint256 zz3, uint256 zzz3) {
-        if (y1 == 0) return ec_PointAtInf();
+        if (y1 == 0) return ecZZ_PointAtInf();
 
         uint256 comp_U = mulmod(2, y1, p); // U = 2*Y1
         zz3 = mulmod(comp_U, comp_U, p); // V = U^2 = zz3
@@ -343,6 +346,11 @@ contract P256Verifier {
         uint256 zz,
         uint256 zzz
     ) internal view returns (uint256 x1, uint256 y1, bool success) {
+        if(zz == 0 && zzz == 0) {
+            (x1, y1) = ecAffine_PointAtInf();
+            return (x1, y1, true);
+        }
+
         (uint256 zzzInv, bool zzzInv_success) = pModInv(zzz); // 1 / zzz
         uint256 zInv = mulmod(zz, zzzInv, p); // 1 / z
         uint256 zzInv = mulmod(zInv, zInv, p); // 1 / zz
@@ -358,8 +366,15 @@ contract P256Verifier {
     /**
      * @dev Point at infinity in ZZ rep
      */
-    function ec_PointAtInf() internal pure returns (uint256, uint256, uint256, uint256) {
-        return (0, 0, 1, 1);
+    function ecZZ_PointAtInf() internal pure returns (uint256, uint256, uint256, uint256) {
+        return (0, 0, 0, 0);
+    }
+
+    /**
+     * @dev Point at infinity in affine rep
+     */
+    function ecAffine_PointAtInf() internal pure returns (uint256, uint256) {
+        return (0, 0);
     }
 
     /**
