@@ -18,6 +18,9 @@ Run `foundryup` to ensure you have the latest foundry. Then,
 git clone --recurse-submodules git@github.com:daimo-eth/eip-7212
 cd eip-7212
 forge test --via-ir -vv
+
+# Coverage. Install the recommended extension to view.
+forge coverage --via-ir --ir-minimum --report lcov
 ```
 
 To regenerate test vectors:
