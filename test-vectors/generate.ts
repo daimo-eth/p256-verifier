@@ -6,12 +6,12 @@ const wycheproofURL =
 const sourceURLs = [
   `${wycheproofURL}/ecdsa_secp256r1_sha256_p1363_test.json`,
   `${wycheproofURL}/ecdsa_secp256r1_sha256_test.json`,
-  `${wycheproofURL}/ecdsa_secp256r1_sha512_p1363_test.json`,
-  `${wycheproofURL}/ecdsa_secp256r1_sha512_test.json`,
   `${wycheproofURL}/ecdsa_test.json`,
   `${wycheproofURL}/ecdsa_webcrypto_test.json`,
 ];
 
+// Collect secp256r1 signature test vectors, deduplicate, and output as a single
+// file. Only include vectors relevant to EIP-7212: (x,y,r,s,hash) all 256 bits.
 async function main() {
   // Download latest Wycheproof vectors
   const vectors = [];
@@ -47,7 +47,11 @@ async function extractVectors(sourceName: string, sourceObj: any) {
   const vectors = [];
   for (const group of sourceObj.testGroups) {
     const { type, key, sha } = group;
-    if (!["SHA-256", "SHA-384", "SHA-512"].includes(sha)) {
+    if (key.curve !== "secp256r1") {
+      console.log(`Skipping unsupported curve ${type} ${key.curve}`);
+      continue;
+    }
+    if (sha !== "SHA-256") {
       console.log(`Skipping unsupported hash ${type} ${sha}`);
       continue;
     }
@@ -89,6 +93,7 @@ async function extractVectors(sourceName: string, sourceObj: any) {
         s,
         hash: msgHash.toString("hex"),
         result,
+        msg,
         comment: `${testStr}: ${comment}`,
       });
     }
