@@ -1,4 +1,5 @@
 import fs from "fs";
+import crypto from "crypto";
 
 interface Vector {
   x: string;
@@ -7,6 +8,7 @@ interface Vector {
   s: string;
   hash: string;
   result: "valid" | "invalid" | "acceptable";
+  msg: string;
   comment: string;
 }
 
@@ -24,23 +26,48 @@ async function main() {
     const y = Buffer.from(vector.y, "hex");
     const r = Buffer.from(vector.r, "hex");
     const s = Buffer.from(vector.s, "hex");
+    const msg = Buffer.from(vector.msg, "hex");
     const hash = Buffer.from(vector.hash, "hex");
 
-    // Validate using SubtleCrypto
+    // Validate SHA-256 hash
+    const msgHash = Buffer.from(await crypto.subtle.digest("SHA-256", msg));
+    assert(msgHash.equals(hash), vector.comment);
+
+    // Verify signature using SubtleCrypto
     const key = await crypto.subtle.importKey(
       "jwk",
-      { kty: "EC", crv: "P-256", x, y },
+      {
+        kty: "EC",
+        crv: "P-256",
+        x: Buffer.from(vector.x, "hex").toString("base64url"),
+        y: Buffer.from(vector.y, "hex").toString("base64url"),
+      },
       { name: "ECDSA", namedCurve: "P-256" },
       false,
       ["verify"]
     );
-    const valid = await crypto.subtle.verify(
-      { name: "ECDSA", hash },
+    const sig = new Uint8Array([...r, ...s]);
+    const result = await crypto.subtle.verify(
+      { name: "ECDSA", hash: "SHA-256" },
       key,
-      Buffer.concat([r, s]),
-      hash
+      sig,
+      msg
     );
+
+    // Check result
+    if (vector.result === "acceptable") {
+      console.log(
+        `ACCEPTABLE ${vector.comment}: SubtleCrypto returns ${result}`
+      );
+      continue;
+    }
+    const expected = vector.result === "valid";
+    assert(result === expected, vector.comment);
   }
+}
+
+function assert(cond: boolean, msg: string) {
+  if (!cond) throw new Error(msg);
 }
 
 main()

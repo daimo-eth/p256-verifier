@@ -4,7 +4,8 @@
   "private": true,
   "description": "",
   "scripts": {
-    "start": "ts-node generate.ts"
+    "start": "ts-node generate.ts",
+    "test": "ts-node test.ts"
   },
   "author": "",
   "license": "MIT",

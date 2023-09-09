@@ -20,10 +20,23 @@ cd eip-7212
 forge test --via-ir -vv
 ```
 
-To regenerate test vectors,
+To regenerate test vectors:
 
 ```
 cd test-vectors
 npm i
+
+# Download, extract, clean test vectors
+# This regenerates ../test/vectors.jsonl
 npm start
+
+# Validate that all vectors work with SubtleCrypto
+npm test
+
+# Validate that all vectors also work with EIP-7212
+# Test the fallback contract...
+cd ..
+forge test --via-ir -vv
+
+# In future, execution spec and clients can test against the same clean vectors
 ```
