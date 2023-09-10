@@ -16,4 +16,7 @@ contract DeployScript is Script {
         vm.broadcast();
         new P256Verifier{salt: 0}();
     }
+
+    // Disable coverage for this file
+    function test() public view {}
 }
