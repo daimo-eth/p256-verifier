@@ -89,12 +89,13 @@ async function extractVectors(sourceName: string, sourceObj: any) {
       // calculate SHA256 hash of msgBytes
       const msgBytes = Buffer.from(msg, "hex");
       const msgHash = Buffer.from(await crypto.subtle.digest(sha, msgBytes));
+      assert(msgHash.length === 32, "hash must be 256 bits");
 
       vectors.push({
-        x,
-        y,
-        r,
-        s,
+        x: x.padStart(64, "0"),
+        y: y.padStart(64, "0"),
+        r: r.padStart(64, "0"),
+        s: s.padStart(64, "0"),
         hash: msgHash.toString("hex"),
         valid,
         msg,

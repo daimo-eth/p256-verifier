@@ -23,10 +23,10 @@ async function main() {
 
   for (const vector of vectors) {
     // Convert hex strings to Uint8Arrays
-    const x = Buffer.from(vector.x.padStart(64, "0"), "hex");
-    const y = Buffer.from(vector.y.padStart(64, "0"), "hex");
-    const r = Buffer.from(vector.r.padStart(64, "0"), "hex");
-    const s = Buffer.from(vector.s.padStart(64, "0"), "hex");
+    const x = Buffer.from(vector.x, "hex");
+    const y = Buffer.from(vector.y, "hex");
+    const r = Buffer.from(vector.r, "hex");
+    const s = Buffer.from(vector.s, "hex");
     const msg = Buffer.from(vector.msg, "hex");
     const hash = Buffer.from(vector.hash, "hex");
 
@@ -59,11 +59,7 @@ async function main() {
     // Verify signature using @noble/curves
     const pub = new Uint8Array([0x04, ...x, ...y]);
     const resultNoble = p256.verify(sig, hash, pub);
-    if (resultNoble !== vector.valid) {
-      console.log(
-        `@noble/curves returned ${resultNoble}, expected ${vector.valid} for ${vector.comment}`
-      );
-    }
+    assert(resultSubtle === vector.valid, "@noble/curves " + vector.comment);
   }
 }
 
