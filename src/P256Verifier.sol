@@ -83,10 +83,7 @@ contract P256Verifier {
         }
 
         (uint256 sInv, bool sInv_success) = nModInv(s);
-
-        if (!sInv_success) {
-            return false;
-        }
+        assert (sInv_success);
 
         uint256 scalar_u = mulmod(uint256(message_hash), sInv, n); // (h * s^-1) in scalar field
         uint256 scalar_v = mulmod(r, sInv, n); // (r * s^-1) in scalar field
@@ -141,10 +138,7 @@ contract P256Verifier {
 
         // H = g + Q
         (HX, HY, add_success) = ecAff_add(GX, GY, QX, QY);
-
-        if (!add_success) {
-            return (0, false);
-        }
+        assert(add_success);
 
         int256 index = 255;
         uint256 bitpair;
