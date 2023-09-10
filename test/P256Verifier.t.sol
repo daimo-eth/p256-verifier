@@ -9,24 +9,9 @@ using stdJson for string;
 
 contract P256VerifierTest is Test {
     P256Verifier public verifier;
-    mapping(string => bool) public ignores;
 
     function setUp() public {
         verifier = new P256Verifier();
-
-        // TODO: here are the four vectors where we disagree with Wycheproof.
-        ignores[
-            "wycheproof/ecdsa_secp256r1_sha256_p1363_test.json EcdsaP1363Verify SHA-256 #128: small r and s^-1"
-        ] = true;
-        ignores[
-            "wycheproof/ecdsa_secp256r1_sha256_p1363_test.json EcdsaP1363Verify SHA-256 #131: small r and 100 bit s^-1"
-        ] = true;
-        ignores[
-            "wycheproof/ecdsa_webcrypto_test.json EcdsaP1363Verify SHA-256 #128: small r and s^-1"
-        ] = true;
-        ignores[
-            "wycheproof/ecdsa_webcrypto_test.json EcdsaP1363Verify SHA-256 #131: small r and 100 bit s^-1"
-        ] = true;
     }
 
     /** Checks a single test vector: signature rs, pubkey Q = (x,y). */
@@ -78,18 +63,13 @@ contract P256VerifierTest is Test {
                 break;
             }
 
-            uint256 x = vector.readUint(".x");
-            uint256 y = vector.readUint(".y");
-            uint256 r = vector.readUint(".r");
-            uint256 s = vector.readUint(".s");
+            uint256 x = uint256(vector.readBytes32(".x"));
+            uint256 y = uint256(vector.readBytes32(".y"));
+            uint256 r = uint256(vector.readBytes32(".r"));
+            uint256 s = uint256(vector.readBytes32(".s"));
             bytes32 hash = vector.readBytes32(".hash");
             bool expected = vector.readBool(".valid");
             string memory comment = vector.readString(".comment");
-
-            /// TODO: remove once we've eliminated the diff
-            if (ignores[comment]) {
-                continue;
-            }
 
             bool result = evaluate(hash, r, s, x, y);
 
