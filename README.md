@@ -33,7 +33,7 @@ Run `foundryup` to ensure you have the latest foundry. Then,
 ```
 git clone --recurse-submodules git@github.com:daimo-eth/p256-verifier
 cd p256-verifier
-forge test -vv
+forge test
 ```
 
 This runs test input and output handling as well as all applicable Wycheproof
@@ -69,7 +69,7 @@ npm test
 # Validate that all vectors also work with EIP-7212
 # Test the fallback contract...
 cd ..
-forge test -vv
+forge test
 
 # In future, execution spec and clients can test against the same clean vectors
 ```

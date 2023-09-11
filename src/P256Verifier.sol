@@ -370,8 +370,8 @@ contract P256Verifier {
         uint256 zInv = mulmod(zz, zzzInv, p); // 1 / z
         uint256 zzInv = mulmod(zInv, zInv, p); // 1 / zz
 
-        // invariant(mulmod(FCL_pModInv(zInv), FCL_pModInv(zInv), p) == zz)
-        // invariant(mulmod(mulmod(FCL_pModInv(zInv), FCL_pModInv(zInv), p), FCL_pModInv(zInv), p) == zzz)
+        // invariant(mulmod(pModInv(zInv), pModInv(zInv), p) == zz);
+        // invariant(mulmod(mulmod(pModInv(zInv), pModInv(zInv), p), pModInv(zInv), p) == zzz);
 
         x1 = mulmod(x, zzInv, p); // X / zz
         y1 = mulmod(y, zzzInv, p); // y = Y / zzz

@@ -4,7 +4,22 @@ out = "out"
 libs = ["lib"]
 fs_permissions = [{ access = "read", path = "./"}]
 solc = "0.8.21"
-optimizer_runs=999999
+verbosity = 2
+
+optimizer = true
+optimizer_runs = 999_999
 via_ir=true
+
+# If we ever want to customize the IR optimizer:
+# [profile.default.optimizer_details.yulDetails]
+# optimizerSteps = ""
+
+# To use the model checker (currently very slow):
+# [profile.default.model_checker]
+# contracts = {'src/P256Verifier.sol' = ['P256Verifier']}
+# engine = 'chc'
+# timeout = 20000
+# targets = ['overflow', 'underflow']
+# showUnproved = true
 
 # See more config options https://book.getfoundry.sh/reference/config/
