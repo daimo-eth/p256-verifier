@@ -25,15 +25,15 @@ contract P256VerifierTest is Test {
         bytes memory input = abi.encodePacked(hash, r, s, x, y);
 
         uint gasBefore = gasleft();
-        (bool success, bytes memory result) = address(verifier).call(input);
+        (bool success, bytes memory res) = address(verifier).staticcall(input);
         gasUsed = gasBefore - gasleft();
 
         assertEq(success, true, "call failed");
-        assertEq(result.length, 32, "invalid result length");
-        uint256 res = abi.decode(result, (uint256));
-        assertTrue(res == 1 || res == 0, "invalid result");
+        assertEq(res.length, 32, "invalid result length");
+        uint256 result = abi.decode(res, (uint256));
+        assertTrue(result == 1 || result == 0, "invalid result");
 
-        return (res == 1, gasUsed);
+        return (result == 1, gasUsed);
     }
 
     // Sanity check. Demonstrate input and output handling.
