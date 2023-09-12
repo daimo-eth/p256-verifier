@@ -31,8 +31,8 @@ bool valid = abi.decode(ret, (uint256)) == 1;
 Run `foundryup` to ensure you have the latest foundry. Then,
 
 ```
-git clone --recurse-submodules git@github.com:daimo-eth/eip-7212
-cd eip-7212
+git clone --recurse-submodules git@github.com:daimo-eth/p256-verifier
+cd p256-verifier
 forge test --via-ir -vv
 ```
 
