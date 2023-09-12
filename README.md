@@ -45,7 +45,7 @@ npm i
 # This regenerates ../test/vectors.jsonl
 npm start
 
-# Validate that all vectors work with SubtleCrypto
+# Validate that all vectors produce expected results with SubtleCrypto and noble library implementation
 npm test
 
 # Validate that all vectors also work with EIP-7212
