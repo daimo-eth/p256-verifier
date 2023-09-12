@@ -8,6 +8,24 @@ The contract matches the proposed [EIP-7212 precompile](https://eips.ethereum.or
 
 The secp256r1 elliptic curve, aka P256, is interesting because it's supported by high-quality consumer enclaves including Yubikey, Apple's Secure Enclave, the Android Keystore, and WebAuthn. P256 verification is especially useful for contract wallets, enabling hardware-based signing keys.
 
+## Usage
+
+**Address `0xA77aB3533750B0C4b229e441fEe37f13c65A2b1F`**
+
+Available on any chain. If missing, see `deploy.sh`.
+
+```solidity
+bytes32 hash; // message hash
+uint256 r, s; // signature
+uint256 x, y; // public key
+
+address verifier = 0xA77aB3533750B0C4b229e441fEe37f13c65A2b1F;
+bytes memory args = abi.encode(hash, r, s, x, y);
+(bool success, bytes memory ret) = verifier.staticcall(args);
+assert(success); // never reverts, always returns 0 or 1
+bool valid = abi.decode(ret, (uint256)) == 1;
+```
+
 ## Development
 
 Run `foundryup` to ensure you have the latest foundry. Then,
