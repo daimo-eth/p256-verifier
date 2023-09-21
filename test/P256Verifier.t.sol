@@ -64,7 +64,7 @@ contract P256VerifierTest is Test {
     // This is the most comprehensive test, covering many edge cases. See vector
     // generation and validation in the test-vectors directory.
     function testWycheproof() public {
-        string memory file = "./test-vectors/vectors.jsonl";
+        string memory file = "./test-vectors/wycheproof_vectors.jsonl";
         while (true) {
             string memory vector = vm.readLine(file);
             if (bytes(vector).length == 0) {

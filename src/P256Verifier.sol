@@ -88,7 +88,7 @@ contract P256Verifier {
         uint256 scalar_u = mulmod(uint256(message_hash), sInv, n); // (h * s^-1) in scalar field
         uint256 scalar_v = mulmod(r, sInv, n); // (r * s^-1) in scalar field
 
-        (uint256 r_x, bool mulmuladd_success) = ecZZ_mulmuladd_S_asm(
+        (uint256 r_x, bool mulmuladd_success) = ecZZ_mulmuladd(
             pubKey[0],
             pubKey[1],
             scalar_u,
@@ -121,7 +121,7 @@ contract P256Verifier {
      * returns tuple of (x coordinate of uG + vQ, boolean that is false if internal precompile staticcall fail)
      * Strauss-Shamir is described well in https://stackoverflow.com/a/50994362
      */
-    function ecZZ_mulmuladd_S_asm(
+    function ecZZ_mulmuladd(
         uint256 QX,
         uint256 QY, // affine rep for input point Q
         uint256 scalar_u,

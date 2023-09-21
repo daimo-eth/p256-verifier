@@ -13,13 +13,24 @@ interface Vector {
   comment: string;
 }
 
-// Validate generated vectors using the known-good SubtleCrypto P256 verifier.
+// Validate generated vectors using the known-good SubtleCrypto P256 verifier and @noble/curves.
 // We then use the vectors to test other implementations like P256Verifier.sol
 async function main() {
-  const vectorsJSONL = fs.readFileSync("../test/vectors.jsonl", "utf8");
-  const vectors = vectorsJSONL
+  const wycheproofVectorsJSONL = fs.readFileSync(
+    "wycheproof_vectors.jsonl",
+    "utf8"
+  );
+  const randomVectorsJSONL = fs.readFileSync("random_vectors.jsonl", "utf8");
+
+  const wycheproofVectors = wycheproofVectorsJSONL
     .split("\n")
     .map((line) => JSON.parse(line) as Vector);
+
+  const randomVectors = randomVectorsJSONL
+    .split("\n")
+    .map((line) => JSON.parse(line) as Vector);
+
+  const vectors = [...wycheproofVectors, ...randomVectors];
 
   for (const vector of vectors) {
     // Convert hex strings to Uint8Arrays
