@@ -37,7 +37,7 @@ async function main() {
   console.log(`Deduped: ${deduped.length} vecs`);
 
   // Write to JSON
-  const filepath = "./vectors.jsonl";
+  const filepath = "./vectors_wycheproof.jsonl";
   console.log(`Writing ${deduped.length} vectors to ${filepath}`);
   const lines = vectors.map((v) => JSON.stringify(v));
   fs.writeFileSync(filepath, lines.join("\n"));

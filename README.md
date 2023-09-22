@@ -10,7 +10,7 @@ The secp256r1 elliptic curve, aka P256, is interesting because it's supported by
 
 ## Usage
 
-**Address `0xA77aB3533750B0C4b229e441fEe37f13c65A2b1F`**
+**Address `0xea923BEe7108728eA2708af25e9981272193a555`**
 
 Available on any chain. If missing, see `deploy.sh`.
 
@@ -19,7 +19,7 @@ bytes32 hash; // message hash
 uint256 r, s; // signature
 uint256 x, y; // public key
 
-address verifier = 0xA77aB3533750B0C4b229e441fEe37f13c65A2b1F;
+address verifier = 0xea923BEe7108728eA2708af25e9981272193a555;
 bytes memory args = abi.encode(hash, r, s, x, y);
 (bool success, bytes memory ret) = verifier.staticcall(args);
 assert(success); // never reverts, always returns 0 or 1

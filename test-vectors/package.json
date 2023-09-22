@@ -4,7 +4,8 @@
   "private": true,
   "description": "",
   "scripts": {
-    "start": "ts-node generate.ts",
+    "generate_wycheproof": "ts-node generate_wycheproof.ts",
+    "generate_random_valid": "ts-node generate_random_valid.ts",
     "test": "ts-node test.ts"
   },
   "author": "",

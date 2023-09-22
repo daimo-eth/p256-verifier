@@ -3,7 +3,7 @@
 forge script DeployScript --via-ir --optimizer-runs=999999 --rpc-url $RPC_URL --broadcast --private-key $PRIVATE_KEY
 
 # Update contract address
-ADDR=0xA77aB3533750B0C4b229e441fEe37f13c65A2b1F
+ADDR=0xea923BEe7108728eA2708af25e9981272193a555
 
 # Verify to Etherscan
 forge verify-contract $ADDR P256Verifier --optimizer-runs=999999 --constructor-args "0x" --show-standard-json-input > script/etherscan.json
@@ -13,4 +13,4 @@ forge verify-contract $ADDR P256Verifier --optimizer-runs=999999 --constructor-a
 # Finally, manually verify to Etherscan
 
 # Success
-# https://goerli.basescan.org/address/0xA77aB3533750B0C4b229e441fEe37f13c65A2b1F#code
+# https://goerli.basescan.org/address/0xea923BEe7108728eA2708af25e9981272193a555#code
