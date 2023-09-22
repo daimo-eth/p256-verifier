@@ -10,7 +10,7 @@ The secp256r1 elliptic curve, aka P256, is interesting because it's supported by
 
 ## Usage
 
-**Address `0x86e49A916721C4542CD1378D43c9f5C7B501de81`**
+**Address `0x1372Caa26F31025568197e20D3bBcf4ABB4d5fe7`**
 
 Available on any chain. If missing, see `deploy.sh`.
 
@@ -19,7 +19,7 @@ bytes32 hash; // message hash
 uint256 r, s; // signature
 uint256 x, y; // public key
 
-address verifier = 0x86e49A916721C4542CD1378D43c9f5C7B501de81;
+address verifier = 0x1372Caa26F31025568197e20D3bBcf4ABB4d5fe7;
 bytes memory args = abi.encode(hash, r, s, x, y);
 (bool success, bytes memory ret) = verifier.staticcall(args);
 assert(success); // never reverts, always returns 0 or 1
@@ -69,7 +69,7 @@ npm test
 # Validate that all vectors also work with EIP-7212
 # Test the fallback contract...
 cd ..
-forge test --via-ir -vv
+forge test -vv
 
 # In future, execution spec and clients can test against the same clean vectors
 ```

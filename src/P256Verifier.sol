@@ -82,19 +82,18 @@ contract P256Verifier {
             return false;
         }
 
-        (uint256 sInv, bool sInv_success) = nModInv(s);
-        assert (sInv_success);
+        uint256 sInv = nModInv(s);
 
         uint256 scalar_u = mulmod(uint256(message_hash), sInv, n); // (h * s^-1) in scalar field
         uint256 scalar_v = mulmod(r, sInv, n); // (r * s^-1) in scalar field
 
-        (uint256 r_x, bool mulmuladd_success) = ecZZ_mulmuladd(
+        uint256 r_x = ecZZ_mulmuladd(
             pubKey[0],
             pubKey[1],
             scalar_u,
             scalar_v
         );
-        return r_x % n == r && mulmuladd_success;
+        return r_x % n == r;
     }
 
     /**
@@ -126,19 +125,17 @@ contract P256Verifier {
         uint256 QY, // affine rep for input point Q
         uint256 scalar_u,
         uint256 scalar_v
-    ) internal view returns (uint256 X, bool success) {
+    ) internal view returns (uint256 X) {
         uint256 zz = 1;
         uint256 zzz = 1;
         uint256 Y;
         uint256 HX;
         uint256 HY;
-        bool add_success;
 
-        if (scalar_u == 0 && scalar_v == 0) return (0, true);
+        if (scalar_u == 0 && scalar_v == 0) return 0;
 
         // H = g + Q
-        (HX, HY, add_success) = ecAff_add(GX, GY, QX, QY);
-        assert(add_success);
+        (HX, HY) = ecAff_add(GX, GY, QX, QY);
 
         int256 index = 255;
         uint256 bitpair;
@@ -182,8 +179,7 @@ contract P256Verifier {
             (X, Y, zz, zzz) = ecZZ_dadd_affine(X, Y, zz, zzz, TX, TY);
         }
 
-        uint256 zzInv;
-        (zzInv, success) = pModInv(zz);
+        uint256 zzInv = pModInv(zz);
         X = mulmod(X, zzInv, p); // X/zz
     }
 
@@ -205,15 +201,15 @@ contract P256Verifier {
         uint256 y1,
         uint256 x2,
         uint256 y2
-    ) internal view returns (uint256, uint256, bool) {
+    ) internal view returns (uint256, uint256) {
         // invariant(ecAff_IsZero(x1, y1) || ecAff_isOnCurve(x1, y1));
         // invariant(ecAff_IsZero(x2, y2) || ecAff_isOnCurve(x2, y2));
 
         uint256 zz1;
         uint256 zzz1;
 
-        if (ecAff_IsInf(x1, y1)) return (x2, y2, true);
-        if (ecAff_IsInf(x2, y2)) return (x1, y1, true);
+        if (ecAff_IsInf(x1, y1)) return (x2, y2);
+        if (ecAff_IsInf(x2, y2)) return (x1, y1);
 
         (x1, y1, zz1, zzz1) = ecZZ_dadd_affine(x1, y1, 1, 1, x2, y2);
 
@@ -339,13 +335,13 @@ contract P256Verifier {
         uint256 y,
         uint256 zz,
         uint256 zzz
-    ) internal view returns (uint256 x1, uint256 y1, bool success) {
+    ) internal view returns (uint256 x1, uint256 y1) {
         if(zz == 0 && zzz == 0) {
             (x1, y1) = ecAffine_PointAtInf();
-            return (x1, y1, true);
+            return (x1, y1);
         }
 
-        (uint256 zzzInv, bool zzzInv_success) = pModInv(zzz); // 1 / zzz
+        uint256 zzzInv = pModInv(zzz); // 1 / zzz
         uint256 zInv = mulmod(zz, zzzInv, p); // 1 / z
         uint256 zzInv = mulmod(zInv, zInv, p); // 1 / zz
 
@@ -354,7 +350,6 @@ contract P256Verifier {
 
         x1 = mulmod(x, zzInv, p); // X / zz
         y1 = mulmod(y, zzzInv, p); // y = Y / zzz
-        success = zzzInv_success;
     }
 
     /**
@@ -374,14 +369,14 @@ contract P256Verifier {
     /**
      * @dev u^-1 mod n
      */
-    function nModInv(uint256 u) internal view returns (uint256 result, bool success) {
+    function nModInv(uint256 u) internal view returns (uint256) {
         return modInv(u, n, minus_2modn);
     }
 
     /**
      * @dev u^-1 mod p
      */
-    function pModInv(uint256 u) internal view returns (uint256 result, bool success) {
+    function pModInv(uint256 u) internal view returns (uint256) {
         return modInv(u, p, minus_2modp);
     }
 
@@ -390,15 +385,15 @@ contract P256Verifier {
      * by Fermat's little theorem, compute u^(f-2) mod f using modexp precompile
      * Assume f != 0.
      */
-    function modInv(uint256 u, uint256 f, uint256 minus_2modf) internal view returns (uint256 result, bool success) {
+    function modInv(uint256 u, uint256 f, uint256 minus_2modf) internal view returns (uint256 result) {
         // invariant(f != 0);
         // invariant(f prime);
 
         // This seems like a relatively standard way to use this precompile:
         // https://github.com/OpenZeppelin/openzeppelin-contracts/pull/3298/files#diff-489d4519a087ca2c75be3315b673587abeca3b302f807643e97efa7de8cb35a5R427
 
-        bytes memory ret;
-        (success, ret) = (address(0x05).staticcall(abi.encode(32, 32, 32, u, minus_2modf, f)));
+        (bool success, bytes memory ret) = (address(0x05).staticcall(abi.encode(32, 32, 32, u, minus_2modf, f)));
+        assert(success); // precompile should never fail on regular EVM environments
         result = abi.decode(ret, (uint256));
     }
 }
