@@ -17,10 +17,13 @@ interface Vector {
 // We then use the vectors to test other implementations like P256Verifier.sol
 async function main() {
   const wycheproofVectorsJSONL = fs.readFileSync(
-    "wycheproof_vectors.jsonl",
+    "vectors_wycheproof.jsonl",
     "utf8"
   );
-  const randomVectorsJSONL = fs.readFileSync("random_vectors.jsonl", "utf8");
+  const randomVectorsJSONL = fs.readFileSync(
+    "vectors_random_valid.jsonl",
+    "utf8"
+  );
 
   const wycheproofVectors = wycheproofVectorsJSONL
     .split("\n")

@@ -41,7 +41,7 @@ async function main() {
   }
 
   // Write to JSON
-  const filepath = "./random_vectors.jsonl";
+  const filepath = "./vectors_random_valid.jsonl";
   console.log(`Writing ${vectors.length} vectors to ${filepath}`);
   const lines = vectors.map((v) => JSON.stringify(v));
   fs.writeFileSync(filepath, lines.join("\n"));

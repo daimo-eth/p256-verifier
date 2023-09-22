@@ -4,5 +4,7 @@ out = "out"
 libs = ["lib"]
 fs_permissions = [{ access = "read", path = "./"}]
 solc = "0.8.21"
+optimizer_runs=999999
+via_ir=true
 
-# See more config options https://github.com/foundry-rs/foundry/tree/master/config
+# See more config options https://book.getfoundry.sh/reference/config/

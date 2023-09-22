@@ -152,12 +152,12 @@ contract GasBenchmarkTest is Test {
     // These include edge cases and invalid signatures, so are
     // less representative of real-world usage.
     function testBenchmarkWycheProofGasUsage() public {
-        benchmarkGasUsage("./test-vectors/wycheproof_vectors.jsonl");
+        benchmarkGasUsage("./test-vectors/vectors_wycheproof.jsonl");
     }
 
     // Benchmark gas usage for a set of randomly generated test vectors.
     // These are more representative of real-world usage.
     function testBenchmarkRandomGasUsage() public {
-        benchmarkGasUsage("./test-vectors/random_vectors.jsonl");
+        benchmarkGasUsage("./test-vectors/vectors_random_valid.jsonl");
     }
 }
