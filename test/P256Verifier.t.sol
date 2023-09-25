@@ -153,11 +153,10 @@ contract P256VerifierTest is Test {
         assertEq(result, false);
         assertLt(gasUsed, 1500);
 
-        // p-1 is in-bounds, takes more gas again.
+        // p-1 is in-bounds but point is not on curve.
         (x, y) = (p - 1, 1);
         (result, gasUsed) = evaluate(hash, r, s, x, y);
         console2.log("gasUsed ", gasUsed);
         assertEq(result, false);
-        assertGt(gasUsed, 1500);
     }
 }

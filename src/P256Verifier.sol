@@ -105,7 +105,7 @@ contract P256Verifier {
         uint256 x,
         uint256 y
     ) internal pure returns (bool) {
-        if (0 == x || x >= p || 0 == y || y >= p) {
+        if (x >= p || y >= p || (x == 0 && y == 0)) {
             return false;
         }
 
@@ -212,8 +212,8 @@ contract P256Verifier {
         uint256 zz1;
         uint256 zzz1;
 
-        if (ecAff_IsZero(x1, y1)) return (x2, y2, true);
-        if (ecAff_IsZero(x2, y2)) return (x1, y1, true);
+        if (ecAff_IsInf(x1, y1)) return (x2, y2, true);
+        if (ecAff_IsInf(x2, y2)) return (x1, y1, true);
 
         (x1, y1, zz1, zzz1) = ecZZ_dadd_affine(x1, y1, 1, 1, x2, y2);
 
@@ -221,16 +221,16 @@ contract P256Verifier {
     }
 
     /**
-     * @dev Check if the curve is the zero curve in affine rep
-     * Assumes point is on the EC or is the zero point.
+     * @dev Check if a point is the infinity point in affine rep.
+     * Assumes point is on the EC or is the point at infinity.
      */
-    function ecAff_IsZero(
-        uint256,
+    function ecAff_IsInf(
+        uint256 x,
         uint256 y
     ) internal pure returns (bool flag) {
         // invariant((x == 0 && y == 0) || ecAff_isOnCurve(x, y));
 
-        return (y == 0);
+        return (x == 0 && y == 0);
     }
 
     /**
