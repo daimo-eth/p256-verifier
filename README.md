@@ -10,7 +10,7 @@ The secp256r1 elliptic curve, aka P256, is interesting because it's supported by
 
 ## Usage
 
-**Address `0x86e49A916721C4542CD1378D43c9f5C7B501de81`**
+**Address `0x228cc9Cb833f919e9F30880249f8A8e45509482C`**
 
 Available on any chain. If missing, see `deploy.sh`.
 
@@ -19,7 +19,7 @@ bytes32 hash; // message hash
 uint256 r, s; // signature
 uint256 x, y; // public key
 
-address verifier = 0x86e49A916721C4542CD1378D43c9f5C7B501de81;
+address verifier = 0x228cc9Cb833f919e9F30880249f8A8e45509482C;
 bytes memory args = abi.encode(hash, r, s, x, y);
 (bool success, bytes memory ret) = verifier.staticcall(args);
 assert(success); // never reverts, always returns 0 or 1
@@ -33,7 +33,7 @@ Run `foundryup` to ensure you have the latest foundry. Then,
 ```
 git clone --recurse-submodules git@github.com:daimo-eth/p256-verifier
 cd p256-verifier
-forge test --via-ir -vv
+forge test -vv
 ```
 
 This runs test input and output handling as well as all applicable Wycheproof
@@ -45,7 +45,7 @@ Install the recommended VSCode extension to view line-by-line test coverage.
 To regenerate coverage:
 
 ```
-forge coverage --via-ir --ir-minimum --report lcov
+forge coverage --ir-minimum --report lcov
 ```
 
 </details>
@@ -69,7 +69,7 @@ npm test
 # Validate that all vectors also work with EIP-7212
 # Test the fallback contract...
 cd ..
-forge test --via-ir -vv
+forge test -vv
 
 # In future, execution spec and clients can test against the same clean vectors
 ```
