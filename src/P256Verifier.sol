@@ -78,7 +78,7 @@ contract P256Verifier {
             return false;
         }
 
-        if (!ecAff_isOnCurve(pubKey[0], pubKey[1])) {
+        if (!ecAff_isValidPubkey(pubKey[0], pubKey[1])) {
             return false;
         }
 
@@ -100,7 +100,7 @@ contract P256Verifier {
      * @dev Check if a point in affine coordinates is on the curve
      * Reject 0 point at infinity.
      */
-    function ecAff_isOnCurve(
+    function ecAff_isValidPubkey(
         uint256 x,
         uint256 y
     ) internal pure returns (bool) {
@@ -108,6 +108,13 @@ contract P256Verifier {
             return false;
         }
 
+        return ecAff_satisfiesCurveEqn(x, y);
+    }
+
+    function ecAff_satisfiesCurveEqn(
+        uint256 x,
+        uint256 y
+    ) internal pure returns (bool) {
         uint256 LHS = mulmod(y, y, p); // y^2
         uint256 RHS = addmod(mulmod(mulmod(x, x, p), x, p), mulmod(a, x, p), p); // x^3 + a x
         RHS = addmod(RHS, b, p); // x^3 + a*x + b
@@ -179,14 +186,19 @@ contract P256Verifier {
             (X, Y, zz, zzz) = ecZZ_dadd_affine(X, Y, zz, zzz, TX, TY);
         }
 
-        uint256 zzInv = pModInv(zz);
+        uint256 zzInv = pModInv(zz); // If zz = 0, zzInv = 0.
         X = mulmod(X, zzInv, p); // X/zz
     }
 
     /**
      * @dev Compute the bits at `index` of u and v and return
-     * them as 2 bit concatenation.
-     * todo: add example
+     * them as 2 bit concatenation. The bit at index 0 is on 
+     * if the `index`th bit of scalar_u is on and the bit at
+     * index 1 is on if the `index`th bit of scalar_v is on.
+     * Examples:
+     * - compute_bitpair(0, 1, 1) == 3
+     * - compute_bitpair(0, 1, 0) == 1
+     * - compute_bitpair(0, 0, 1) == 2
      */
     function compute_bitpair(uint256 index, uint256 scalar_u, uint256 scalar_v) internal pure returns (uint256 ret) {
         ret = (((scalar_v >> index) & 1) << 1) + ((scalar_u >> index) & 1);
@@ -383,7 +395,8 @@ contract P256Verifier {
     /**
      * @dev u^-1 mod f = u^(phi(f) - 1) mod f = u^(f-2) mod f for prime f
      * by Fermat's little theorem, compute u^(f-2) mod f using modexp precompile
-     * Assume f != 0.
+     * Assume f != 0. If u is 0, then u^-1 mod f is undefined mathematically, 
+     * but this function returns 0.
      */
     function modInv(uint256 u, uint256 f, uint256 minus_2modf) internal view returns (uint256 result) {
         // invariant(f != 0);
