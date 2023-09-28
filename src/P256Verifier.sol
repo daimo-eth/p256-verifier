@@ -246,8 +246,6 @@ contract P256Verifier {
      * Assumes point is on the EC or is the point at infinity.
      */
     function ecZZ_IsInf(
-        uint256,
-        uint256,
         uint256 zz,
         uint256 zzz
     ) internal pure returns (bool flag) {
@@ -273,9 +271,9 @@ contract P256Verifier {
         uint256 y2
     ) internal pure returns (uint256 x3, uint256 y3, uint256 zz3, uint256 zzz3) {
         if (ecAff_IsInf(x2, y2)) { // (X2, Y2) is point at infinity
-            if (ecZZ_IsInf(x1, y1, zz1, zzz1)) return ecZZ_PointAtInf();
+            if (ecZZ_IsInf(zz1, zzz1)) return ecZZ_PointAtInf();
             return (x1, y1, zz1, zzz1);
-        } else if (ecZZ_IsInf(x1, y1, zz1, zzz1)) { // (X1, Y1) is point at infinity
+        } else if (ecZZ_IsInf(zz1, zzz1)) { // (X1, Y1) is point at infinity
             return (x2, y2, 1, 1);
         }
 
@@ -319,8 +317,7 @@ contract P256Verifier {
      */
     function ecZZ_double_zz(uint256 x1,
         uint256 y1, uint256 zz1, uint256 zzz1) internal pure returns (uint256 x3, uint256 y3, uint256 zz3, uint256 zzz3) {
-        if (ecZZ_IsInf(x1, y1, zz1, zzz1)) return ecZZ_PointAtInf();
-        if (zz1 == 1 && zzz1 == 1) return ecZZ_double_affine(x1, y1);
+        if (ecZZ_IsInf(zz1, zzz1)) return ecZZ_PointAtInf();
     
         uint256 comp_U = mulmod(2, y1, p); // U = 2*Y1
         uint256 comp_V = mulmod(comp_U, comp_U, p); // V = U^2
@@ -364,7 +361,7 @@ contract P256Verifier {
         uint256 zz,
         uint256 zzz
     ) internal view returns (uint256 x1, uint256 y1) {
-        if(ecZZ_IsInf(x, y, zz, zzz)) {
+        if(ecZZ_IsInf(zz, zzz)) {
             (x1, y1) = ecAffine_PointAtInf();
             return (x1, y1);
         }
