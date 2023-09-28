@@ -1,16 +1,16 @@
 ## `P256Verifier` Solidity contract
 
-This repo implements a gas-efficient P256 signature verifier. Verifying a signature costs about 350k gas. Pure function, no precomputation. This implementation was inspired by [Renaud Dubois/Ledger's implementation](https://github.com/rdubois-crypto/FreshCryptoLib).
+This repo implements a gas-efficient P256 signature verifier. Verifying a signature costs about 330k gas. Pure function, no precomputation. This implementation was inspired by [Renaud Dubois/Ledger's implementation](https://github.com/rdubois-crypto/FreshCryptoLib).
 
 The contract matches the proposed [EIP-7212 precompile](https://eips.ethereum.org/EIPS/eip-7212), letting us ship it as a [progressive precompile](https://ethereum-magicians.org/t/progressive-precompiles-via-create2-shadowing/).
 
-**The contract exists at a deterministic CREATE2 address. You can use it on any EVM chain. If the chain implements EIP-7212 at the same CREATE2 address, you pay ~3k gas. If not, you pay ~200k gas. Either way, the contract address and results are identical.** This is particularly beneficial for chains that want to maintain full EVM compatibility while adding this new precompiles (upto gas schedules).
+**The contract exists at a deterministic CREATE2 address. You can use it on any EVM chain. If the chain implements EIP-7212 at the same CREATE2 address as this contract, you pay ~3.4k gas. If not, you pay ~330k gas. Either way, the contract address and results are identical.** This is particularly beneficial for chains that want to maintain full EVM compatibility while adding this new precompiles (upto gas schedules).
 
-The secp256r1 elliptic curve, aka P256, is interesting because it's supported by high-quality consumer enclaves including Yubikey, Apple's Secure Enclave, the Android Keystore, and WebAuthn. P256 verification is especially useful for contract wallets, enabling hardware-based signing keys.
+The secp256r1 elliptic curve, aka P256, is used by high-quality consumer enclaves including Yubikey, Apple's Secure Enclave, the Android Keystore, and WebAuthn. P256 verification is especially useful for contract wallets, enabling hardware-based signing keys and smoother UX.
 
 ## Usage
 
-**Address `0x228cc9Cb833f919e9F30880249f8A8e45509482C`**
+**Address `0xc2b78104907F722DABAc4C69f826a522B2754De4`**
 
 Available on any chain. If missing, see `deploy.sh`.
 
@@ -19,7 +19,7 @@ bytes32 hash; // message hash
 uint256 r, s; // signature
 uint256 x, y; // public key
 
-address verifier = 0x228cc9Cb833f919e9F30880249f8A8e45509482C;
+address verifier = 0xc2b78104907F722DABAc4C69f826a522B2754De4;
 bytes memory args = abi.encode(hash, r, s, x, y);
 (bool success, bytes memory ret) = verifier.staticcall(args);
 assert(success); // never reverts, always returns 0 or 1
