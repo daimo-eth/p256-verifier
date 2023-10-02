@@ -1,0 +1,14 @@
+[
+  {
+    "network": "Mainnet",
+    "address": "0xc2b78104907F722DABAc4C69f826a522B2754De4",
+    "type": "contract",
+    "gas": "334k"
+  },
+  {
+    "network": "Base Goerli",
+    "address": "0xc2b78104907F722DABAc4C69f826a522B2754De4",
+    "type": "contract",
+    "gas": "334k"
+  }
+]
