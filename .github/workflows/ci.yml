@@ -27,8 +27,8 @@ jobs:
         id: build
 
       - run: |
-          forge test -vv
-          forge coverage --ir-minimum --report lcov
+          forge test -vv --fork-url "https://base-goerli.publicnode.com"
+          forge coverage --ir-minimum --report lcov --fork-url "https://base-goerli.publicnode.com"
           git diff --exit-code
         id: test
 
