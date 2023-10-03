@@ -14,21 +14,21 @@ The secp256r1 elliptic curve, aka P256, is used by high-quality consumer enclave
 
 Available on any chain. If missing, see `deploy.sh`.
 
-```solidity
-// Install with:
-// - forge install daimo-eth/p256-verifier
-// - add p256-verifier/=lib/p256-verifier/src/ to remappings.txt
+Install with:
+- `forge install daimo-eth/p256-verifier`
+- add `p256-verifier/=lib/p256-verifier/src/` to remappings.txt
 
-import "p256-verifier/Verify.sol";
+```solidity
+import "p256-verifier/P256.sol";
 
 bytes32 hash; // message hash
 uint256 r, s; // signature
 uint256 x, y; // public key
 
-bool valid = Verify.p256VerifySignature(hash, r, s, x, y);
+bool valid = P256.verifySignature(hash, r, s, x, y);
 ```
 
-Alternately, calling `Verify.p256VerifySignatureAllowMalleability` ignores 
+Alternately, calling `P256.verifySignatureAllowMalleability` ignores 
 malleability of signatures, matching the behavior specified by the NIST standard
 exactly.
 

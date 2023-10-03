@@ -1,10 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.21;
 
-library Verify {
+/**
+ * Helper library for external contracts to verify P256 signatures.
+ **/
+library P256 {
     address constant VERIFIER = 0xc2b78104907F722DABAc4C69f826a522B2754De4;
 
-    function p256VerifySignatureAllowMalleability(
+    function verifySignatureAllowMalleability(
         bytes32 message_hash,
         uint256 r,
         uint256 s,
@@ -22,7 +25,7 @@ library Verify {
     uint256 constant P256_N_DIV_2 =
         57896044605178124381348723474703786764998477612067880171211129530534256022184;
 
-    function p256VerifySignature(
+    function verifySignature(
         bytes32 message_hash,
         uint256 r,
         uint256 s,
@@ -34,6 +37,6 @@ library Verify {
             return false;
         }
 
-        return p256VerifySignatureAllowMalleability(message_hash, r, s, x, y);
+        return verifySignatureAllowMalleability(message_hash, r, s, x, y);
     }
 }

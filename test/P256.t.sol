@@ -3,10 +3,10 @@ pragma solidity 0.8.21;
 
 import {Test, console2} from "forge-std/Test.sol";
 import {stdJson} from "forge-std/StdJson.sol";
-import {Verify} from "../src/Verify.sol";
+import {P256} from "../src/P256.sol";
 import {P256Verifier} from "../src/P256Verifier.sol";
 
-contract VerifyTest is Test {
+contract P256Test is Test {
     uint256[2] public pubKey;
 
     function setUp() public {
@@ -23,7 +23,7 @@ contract VerifyTest is Test {
 
         bytes32 hash = 0x267f9ea080b54bbea2443dff8aa543604564329783b6a515c6663a691c555490;
 
-        bool res = Verify.p256VerifySignatureAllowMalleability(
+        bool res = P256.verifySignatureAllowMalleability(
             hash,
             r,
             s,
@@ -32,7 +32,7 @@ contract VerifyTest is Test {
         );
         assertEq(res, true);
 
-        res = Verify.p256VerifySignature(hash, r, s, pubKey[0], pubKey[1]);
+        res = P256.verifySignature(hash, r, s, pubKey[0], pubKey[1]);
         assertEq(res, false);
     }
 
@@ -43,7 +43,7 @@ contract VerifyTest is Test {
 
         bytes32 hash = 0x267f9ea080b54bbea2443dff8aa543604564329783b6a515c6663a691c555490;
 
-        bool res = Verify.p256VerifySignatureAllowMalleability(
+        bool res = P256.verifySignatureAllowMalleability(
             hash,
             r,
             s,
@@ -52,7 +52,7 @@ contract VerifyTest is Test {
         );
         assertEq(res, true);
 
-        res = Verify.p256VerifySignature(hash, r, s, pubKey[0], pubKey[1]);
+        res = P256.verifySignature(hash, r, s, pubKey[0], pubKey[1]);
         assertEq(res, true);
     }
 }
