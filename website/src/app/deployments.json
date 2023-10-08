@@ -1,0 +1,16 @@
+[
+  {
+    "network": "Mainnet",
+    "address": "0xc2b78104907F722DABAc4C69f826a522B2754De4",
+    "type": "contract",
+    "gas": "334k",
+    "link": "https://etherscan.io/address/0xc2b78104907F722DABAc4C69f826a522B2754De4"
+  },
+  {
+    "network": "Base Goerli",
+    "address": "0xc2b78104907F722DABAc4C69f826a522B2754De4",
+    "type": "contract",
+    "gas": "334k",
+    "link": "https://goerli.basescan.org/address/0xc2b78104907F722DABAc4C69f826a522B2754De4"
+  }
+]
