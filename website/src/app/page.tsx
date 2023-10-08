@@ -133,7 +133,7 @@ function ButtonsBar({
       </button>
 
       <a
-        href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
+        href="https://daimo.xyz/blog/p256verifier"
         className="mx-6 group rounded-lg border px-5 py-4 transition-colors border-gray-300 hover:bg-gray-100"
         target="_blank"
         rel="noopener noreferrer"
@@ -151,19 +151,27 @@ function ButtonsBar({
 }
 
 function UsageTab() {
-  const usageCode = `bytes32 hash; // message hash
+  const usageCode = `import "p256-verifier/P256.sol";
+
+bytes32 hash; // message hash
 uint256 r, s; // signature
 uint256 x, y; // public key
 
-address verifier = 0xc2b78104907F722DABAc4C69f826a522B2754De4;
-bytes memory args = abi.encode(hash, r, s, x, y);
-(bool success, bytes memory ret) = verifier.staticcall(args);
-assert(success); // never reverts, always returns 0 or 1
-bool valid = abi.decode(ret, (uint256)) == 1;`;
+bool valid = P256.verifySignature(hash, r, s, x, y);`;
 
   return (
     <div className="flex flex-col items-center justify-center">
       <h1 className="text-xl font-bold m-4">Solidity Code</h1>
+      <h3 className="text-m m-4">
+        Install the{" "}
+        <a
+          className="text-blue-500 hover:underline"
+          href="https://github.com/daimo-eth/p256-verifier"
+          target="_blank"
+        >
+          repository
+        </a>
+      </h3>
       <SyntaxHighlighter language="solidity" style={oneLight}>
         {usageCode}
       </SyntaxHighlighter>
@@ -180,12 +188,18 @@ type Deployment = {
   address: string;
   type: string;
   gas: string;
+  link: string;
 };
 
 function DeploymentRow(deployment: Deployment) {
   return (
     <tr className="border-black bg-neutral-100">
-      <td className="border-black border px-4 py-2">{deployment.network}</td>
+      <td className="border-black border px-4 py-2">
+        {deployment.network}{" "}
+        <a href={deployment.link} target="_blank">
+          &#x1F517;
+        </a>
+      </td>
       <td className="border-black border px-4 py-2">{deployment.address}</td>
       <td className="border-black border px-4 py-2">{deployment.type}</td>
       <td className="border-black border px-4 py-2">{deployment.gas}</td>
