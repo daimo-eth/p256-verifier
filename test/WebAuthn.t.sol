@@ -23,17 +23,18 @@ contract WebAuthnTest is Test {
         bytes
             memory authenticatorData = hex"e0b592a7dd54eedeec65206e031fc196b8e5915f9b389735860c83854f65dc0e1d00000000";
 
-        bool ret = WebAuthn.verifySignature(
-            challenge,
-            authenticatorData,
-            false,
-            clientDataJSON,
-            challengeLocation,
-            r,
-            s,
-            publicKey[0],
-            publicKey[1]
-        );
+        bool ret = WebAuthn.verifySignature({
+            challenge: challenge,
+            authenticatorData: authenticatorData,
+            requireUserVerification: false,
+            clientDataJSON: clientDataJSON,
+            challengeLocation: challengeLocation,
+            responseTypeLocation: 1,
+            r: r,
+            s: s,
+            x: publicKey[0],
+            y: publicKey[1]
+        });
         assertTrue(ret);
     }
 }

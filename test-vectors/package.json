@@ -6,7 +6,7 @@
   "scripts": {
     "generate_wycheproof": "ts-node generate_wycheproof.ts",
     "generate_random_valid": "ts-node generate_random_valid.ts",
-    "generate_scure_base64": "ts-node generate_scure_base64.ts",
+    "generate_scure_base64url": "ts-node generate_scure_base64url.ts",
     "test": "ts-node test.ts"
   },
   "author": "",

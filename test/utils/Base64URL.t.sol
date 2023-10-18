@@ -26,10 +26,10 @@ contract Base64URLTest is Test {
             }
 
             bytes memory data = vector.readBytes(".data");
-            string memory exp = vector.readString(".exp");
-            string memory b64url = Base64URL.encode(data);
+            string memory expected = vector.readString(".base64url");
+            string memory computed = Base64URL.encode(data);
 
-            assertEq(b64url, exp);
+            assertEq(computed, expected);
         }
     }
 

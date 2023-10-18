@@ -27,7 +27,7 @@ async function main() {
     const data = Uint8Array.from(Buffer.from(v.data, "hex"));
     return JSON.stringify({
       data: v.data,
-      exp: base64urlnopad.encode(data),
+      base64url: base64urlnopad.encode(data),
     });
   });
   fs.writeFileSync(filepath, lines.join("\n"));
