@@ -959,4 +959,7 @@ library FCL_Elliptic_ZZ {
         }
         return X == 0;
     } //end  ecdsa_precomputed_verify()
+
+    // Exclude from forge coverage
+    function test() public {}
 } //EOF

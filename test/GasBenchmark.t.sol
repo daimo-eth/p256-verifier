@@ -4,7 +4,7 @@ pragma solidity 0.8.21;
 import {Test, console2} from "forge-std/Test.sol";
 import {stdJson} from "forge-std/StdJson.sol";
 import {P256Verifier} from "../src/P256Verifier.sol";
-import {FCL_Elliptic_ZZ} from "./FCL_elliptic.sol";
+import {FCL_Elliptic_ZZ} from "./external/FCL_elliptic.sol";
 
 using stdJson for string;
 
@@ -43,6 +43,9 @@ contract FCLWrapperEIP7212 {
 
         return abi.encodePacked(ret);
     }
+
+    // Exclude from forge coverage
+    function test() public {}
 }
 
 contract GasBenchmarkTest is Test {
@@ -160,4 +163,7 @@ contract GasBenchmarkTest is Test {
     function testBenchmarkRandomGasUsage() public {
         benchmarkGasUsage("./test-vectors/vectors_random_valid.jsonl");
     }
+
+    // Exclude from forge coverage
+    function test() public {}
 }
