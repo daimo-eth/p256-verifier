@@ -43,6 +43,9 @@ contract FCLWrapperEIP7212 {
 
         return abi.encodePacked(ret);
     }
+
+    // Exclude from forge coverage
+    function test() public {}
 }
 
 contract GasBenchmarkTest is Test {
@@ -160,4 +163,7 @@ contract GasBenchmarkTest is Test {
     function testBenchmarkRandomGasUsage() public {
         benchmarkGasUsage("./test-vectors/vectors_random_valid.jsonl");
     }
+
+    // Exclude from forge coverage
+    function test() public {}
 }

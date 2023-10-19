@@ -134,7 +134,10 @@ library WebAuthn {
         uint256 y
     ) public view returns (bool) {
         // Check that authenticatorData has good flags
-        if (!checkAuthFlags(authenticatorData[32], requireUserVerification)) {
+        if (
+            authenticatorData.length < 32 ||
+            !checkAuthFlags(authenticatorData[32], requireUserVerification)
+        ) {
             return false;
         }
 
