@@ -8,10 +8,10 @@ library Base64URL {
         string memory strb64 = Base64.encode(data);
         bytes memory b64 = bytes(strb64);
 
-        // count and ignore all "=" symbols from the end of the string
-        uint256 equalsCount = 0; // Base64 can end with "=" or "=="; Base64URL has no padding.
-        if (b64[b64.length - 2] == "=") equalsCount = 2;
-        else if (b64[b64.length - 1] == "=") equalsCount = 1;
+        // Base64 can end with "=" or "=="; Base64URL has no padding.
+        uint256 equalsCount = 0;
+        if (b64.length > 2 && b64[b64.length - 2] == "=") equalsCount = 2;
+        else if (b64.length > 1 && b64[b64.length - 1] == "=") equalsCount = 1;
 
         uint256 len = b64.length - equalsCount;
         bytes memory result = new bytes(len);
