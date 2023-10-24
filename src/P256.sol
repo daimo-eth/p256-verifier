@@ -13,7 +13,7 @@ library P256 {
         uint256 s,
         uint256 x,
         uint256 y
-    ) public view returns (bool) {
+    ) internal view returns (bool) {
         bytes memory args = abi.encode(message_hash, r, s, x, y);
         (bool success, bytes memory ret) = VERIFIER.staticcall(args);
         assert(success); // never reverts, always returns 0 or 1
@@ -31,7 +31,7 @@ library P256 {
         uint256 s,
         uint256 x,
         uint256 y
-    ) public view returns (bool) {
+    ) internal view returns (bool) {
         // check for signature malleability
         if (s > P256_N_DIV_2) {
             return false;

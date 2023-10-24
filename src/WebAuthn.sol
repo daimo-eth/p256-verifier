@@ -132,7 +132,7 @@ library WebAuthn {
         uint256 s,
         uint256 x,
         uint256 y
-    ) public view returns (bool) {
+    ) internal view returns (bool) {
         // Check that authenticatorData has good flags
         if (
             authenticatorData.length < 32 ||
