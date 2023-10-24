@@ -4,7 +4,7 @@ pragma solidity 0.8.21;
 import "openzeppelin-contracts/contracts/utils/Base64.sol";
 
 library Base64URL {
-    function encode(bytes memory data) public pure returns (string memory) {
+    function encode(bytes memory data) internal pure returns (string memory) {
         string memory strb64 = Base64.encode(data);
         bytes memory b64 = bytes(strb64);
 
