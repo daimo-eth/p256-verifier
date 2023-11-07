@@ -40,7 +40,7 @@ library WebAuthn {
 
     /// Verifies the authFlags in authenticatorData. Numbers in inline comment
     /// correspond to the same numbered bullets in
-    /// https://w3c.github.io/webauthn/#sctn-verifying-assertion.
+    /// https://www.w3.org/TR/webauthn-2/#sctn-verifying-assertion.
     function checkAuthFlags(
         bytes1 flags,
         bool requireUserVerification
@@ -73,7 +73,7 @@ library WebAuthn {
 
     /**
      * Verifies a Webauthn P256 signature (Authentication Assertion) as described
-     * in https://w3c.github.io/webauthn/#sctn-verifying-assertion. We do not
+     * in https://www.w3.org/TR/webauthn-2/#sctn-verifying-assertion. We do not
      * verify all the steps as described in the specification, only ones relevant
      * to our context. Please carefully read through this list before usage.
      * Specifically, we do verify the following:
@@ -135,7 +135,7 @@ library WebAuthn {
     ) internal view returns (bool) {
         // Check that authenticatorData has good flags
         if (
-            authenticatorData.length < 32 ||
+            authenticatorData.length < 37 ||
             !checkAuthFlags(authenticatorData[32], requireUserVerification)
         ) {
             return false;
