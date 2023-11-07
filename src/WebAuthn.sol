@@ -135,7 +135,7 @@ library WebAuthn {
     ) internal view returns (bool) {
         // Check that authenticatorData has good flags
         if (
-            authenticatorData.length < 32 ||
+            authenticatorData.length < 37 ||
             !checkAuthFlags(authenticatorData[32], requireUserVerification)
         ) {
             return false;
