@@ -8,7 +8,7 @@ The contract matches the proposed [EIP-7212 precompile](https://eips.ethereum.or
 
 The secp256r1 elliptic curve, aka P256, is used by high-quality consumer enclaves including Yubikey, Apple's Secure Enclave, the Android Keystore, and WebAuthn. P256 verification is especially useful for contract wallets, enabling hardware-based signing keys and smoother UX.
 
-This implementation was inspired by [Renaud Dubois/Ledger's implementation](https://github.com/rdubois-crypto/FreshCryptoLib) and [blst](https://github.com/supranational/blst). Veridise's audit report for this implementation is available [here](./audits/2023-10-veridise.pdf).
+This implementation was inspired by [Renaud Dubois/Ledger's implementation](https://github.com/rdubois-crypto/FreshCryptoLib) and [blst](https://github.com/supranational/blst).
 
 ## Usage
 
@@ -33,6 +33,13 @@ bool valid = P256.verifySignature(hash, r, s, x, y);
 Alternately, calling `P256.verifySignatureAllowMalleability` ignores 
 malleability of signatures, matching the behavior specified by the NIST standard
 exactly.
+
+You can also verify WebAuthn/Passkey signatures using the [`WebAuthn.sol`](./src/WebAuthn.sol) library contract.
+
+## Audits
+
+- [Veridise audit 2023 Oct: P256Verifier](./audits/2023-10-veridise.pdf)
+- [Veridise audit 2023 Nov: WebAuthn](./audits/2023-11-veridise-webauthn.pdf)
 
 ## Development
 
