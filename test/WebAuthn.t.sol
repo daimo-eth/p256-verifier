@@ -4,6 +4,8 @@ pragma solidity 0.8.21;
 import {Test, console2} from "forge-std/Test.sol";
 import {stdJson} from "forge-std/StdJson.sol";
 import {WebAuthn} from "../src/WebAuthn.sol";
+import {P256} from "../src/P256.sol";
+import {P256Verifier} from "../src/P256Verifier.sol";
 
 contract WebAuthnTest is Test {
     uint256[2] publicKey = [
@@ -21,6 +23,11 @@ contract WebAuthnTest is Test {
         0x7a4fef4d0b11187f95f69eefbb428df8ac799bbd9305066b1e9c9fe9a5bcf8c4;
     uint256 challengeLocation = 23;
     uint256 responseTypeLocation = 1;
+
+    function setUp() public {
+        // Deploy P256 Verifier
+        vm.etch(P256.VERIFIER, type(P256Verifier).runtimeCode);
+    }
 
     // Simple manual valid signature test
     function testHandParsed() public {
