@@ -159,4 +159,20 @@ contract P256VerifierTest is Test {
         console2.log("gasUsed ", gasUsed);
         assertEq(result, false);
     }
+
+    function testEdgeCaseQisMinusG() public {
+        uint256 u = 3;
+        uint256 v = 1;
+
+        // Q = -G
+        uint256 QX = 48439561293906451759052585252797914202762949526041747995844080717082404635286;
+        uint256 QY = 79657838253606452964112319029819691573475036742305299123656433055298683448842;
+
+        uint256 X = verifier.ecZZ_mulmuladd(QX, QY, u, v);
+
+        assertEq(
+            X,
+            56515219790691171413109057904011688695424810155802929973526481321309856242040
+        );
+    }
 }

@@ -132,7 +132,7 @@ contract P256Verifier {
         uint256 QY, // affine rep for input point Q
         uint256 scalar_u,
         uint256 scalar_v
-    ) internal view returns (uint256 X) {
+    ) public view returns (uint256 X) {
         uint256 zz = 1;
         uint256 zzz = 1;
         uint256 Y;
