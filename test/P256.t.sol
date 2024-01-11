@@ -25,13 +25,7 @@ contract P256Test is Test {
 
         bytes32 hash = 0x267f9ea080b54bbea2443dff8aa543604564329783b6a515c6663a691c555490;
 
-        bool res = P256.verifySignatureAllowMalleability(
-            hash,
-            r,
-            s,
-            pubKey[0],
-            pubKey[1]
-        );
+        bool res = P256.verifySignatureAllowMalleability(hash, r, s, pubKey[0], pubKey[1]);
         assertEq(res, true);
 
         res = P256.verifySignature(hash, r, s, pubKey[0], pubKey[1]);
@@ -45,13 +39,7 @@ contract P256Test is Test {
 
         bytes32 hash = 0x267f9ea080b54bbea2443dff8aa543604564329783b6a515c6663a691c555490;
 
-        bool res = P256.verifySignatureAllowMalleability(
-            hash,
-            r,
-            s,
-            pubKey[0],
-            pubKey[1]
-        );
+        bool res = P256.verifySignatureAllowMalleability(hash, r, s, pubKey[0], pubKey[1]);
         assertEq(res, true);
 
         res = P256.verifySignature(hash, r, s, pubKey[0], pubKey[1]);

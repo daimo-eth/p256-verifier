@@ -14,17 +14,16 @@ contract P256VerifierTest is Test {
         verifier = new P256Verifier();
     }
 
-    /** Checks a single test vector: signature rs, pubkey Q = (x,y). */
-    function evaluate(
-        bytes32 hash,
-        uint256 r,
-        uint256 s,
-        uint256 x,
-        uint256 y
-    ) private returns (bool valid, uint gasUsed) {
+    /**
+     * Checks a single test vector: signature rs, pubkey Q = (x,y).
+     */
+    function evaluate(bytes32 hash, uint256 r, uint256 s, uint256 x, uint256 y)
+        private
+        returns (bool valid, uint256 gasUsed)
+    {
         bytes memory input = abi.encodePacked(hash, r, s, x, y);
 
-        uint gasBefore = gasleft();
+        uint256 gasBefore = gasleft();
         (bool success, bytes memory res) = address(verifier).staticcall(input);
         gasUsed = gasBefore - gasleft();
 
@@ -79,17 +78,10 @@ contract P256VerifierTest is Test {
             bool expected = vector.readBool(".valid");
             string memory comment = vector.readString(".comment");
 
-            (bool result, ) = evaluate(hash, r, s, x, y);
+            (bool result,) = evaluate(hash, r, s, x, y);
 
             string memory err = string(
-                abi.encodePacked(
-                    "exp ",
-                    expected ? "1" : "0",
-                    ", we return ",
-                    result ? "1" : "0",
-                    ": ",
-                    comment
-                )
+                abi.encodePacked("exp ", expected ? "1" : "0", ", we return ", result ? "1" : "0", ": ", comment)
             );
             assertTrue(result == expected, err);
         }
@@ -98,10 +90,10 @@ contract P256VerifierTest is Test {
     function testWrongInputLength() public {
         // First valid Wycheproof vector
         bytes32 hash = 0xbb5a52f42f9c9261ed4361f59422a1e30036e7c32b270c8807a419feca605023;
-        uint r = 19738613187745101558623338726804762177711919211234071563652772152683725073944;
-        uint s = 34753961278895633991577816754222591531863837041401341770838584739693604822390;
-        uint x = 18614955573315897657680976650685450080931919913269223958732452353593824192568;
-        uint y = 90223116347859880166570198725387569567414254547569925327988539833150573990206;
+        uint256 r = 19738613187745101558623338726804762177711919211234071563652772152683725073944;
+        uint256 s = 34753961278895633991577816754222591531863837041401341770838584739693604822390;
+        uint256 x = 18614955573315897657680976650685450080931919913269223958732452353593824192568;
+        uint256 y = 90223116347859880166570198725387569567414254547569925327988539833150573990206;
         bytes memory input = abi.encodePacked(hash, r, s, x, y);
         (bool success, bytes memory result) = address(verifier).call(input);
         bytes32 res = abi.decode(result, (bytes32));
@@ -119,11 +111,11 @@ contract P256VerifierTest is Test {
         uint256 p = 0xFFFFFFFF00000001000000000000000000000000FFFFFFFFFFFFFFFFFFFFFFFF;
 
         bytes32 hash = bytes32(0);
-        (uint r, uint s, uint x, uint y) = (1, 1, 1, 1);
+        (uint256 r, uint256 s, uint256 x, uint256 y) = (1, 1, 1, 1);
 
         // In-bounds dummy key (1, 1)
         // Calls modexp, which takes gas.
-        (bool result, uint gasUsed) = evaluate(hash, r, s, x, y);
+        (bool result, uint256 gasUsed) = evaluate(hash, r, s, x, y);
         console2.log("gasUsed ", gasUsed);
         assertEq(result, false);
         assertGt(gasUsed, 1500);

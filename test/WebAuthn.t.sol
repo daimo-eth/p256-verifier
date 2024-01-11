@@ -15,12 +15,9 @@ contract WebAuthnTest is Test {
     string clientDataJSON =
         '{"type":"webauthn.get","challenge":"dGVzdA","origin":"https://funny-froyo-3f9b75.netlify.app"}';
     bytes challenge = hex"74657374";
-    bytes authenticatorData =
-        hex"e0b592a7dd54eedeec65206e031fc196b8e5915f9b389735860c83854f65dc0e1d00000000";
-    uint256 r =
-        0x32e005a53ae49a96ac88c715243638dd5c985fbd463c727d8eefd05bee4e2570;
-    uint256 s =
-        0x7a4fef4d0b11187f95f69eefbb428df8ac799bbd9305066b1e9c9fe9a5bcf8c4;
+    bytes authenticatorData = hex"e0b592a7dd54eedeec65206e031fc196b8e5915f9b389735860c83854f65dc0e1d00000000";
+    uint256 r = 0x32e005a53ae49a96ac88c715243638dd5c985fbd463c727d8eefd05bee4e2570;
+    uint256 s = 0x7a4fef4d0b11187f95f69eefbb428df8ac799bbd9305066b1e9c9fe9a5bcf8c4;
     uint256 challengeLocation = 23;
     uint256 responseTypeLocation = 1;
 
@@ -141,7 +138,8 @@ contract WebAuthnTest is Test {
 
         // User Verification not set data from SimpleWebauthn
         // https://github.com/MasterKale/SimpleWebAuthn/blob/master/packages/server/src/helpers/parseAuthenticatorData.test.ts#L14
-        customAuthenticatorData = hex"49960de5880e8c687434170f6476605b8fe4aeb9a28632c7995cf3ba831d9763810000008da1716578616d706c652e657874656e73696f6e78765468697320697320616e206578616d706c6520657874656e73696f6e2120496620796f7520726561642074686973206d6573736167652c20796f752070726f6261626c79207375636365737366756c6c792070617373696e6720636f6e666f726d616e63652074657374732e20476f6f64206a6f6221";
+        customAuthenticatorData =
+            hex"49960de5880e8c687434170f6476605b8fe4aeb9a28632c7995cf3ba831d9763810000008da1716578616d706c652e657874656e73696f6e78765468697320697320616e206578616d706c6520657874656e73696f6e2120496620796f7520726561642074686973206d6573736167652c20796f752070726f6261626c79207375636365737366756c6c792070617373696e6720636f6e666f726d616e63652074657374732e20476f6f64206a6f6221";
         ret = WebAuthn.verifySignature({
             challenge: challenge,
             authenticatorData: customAuthenticatorData,
@@ -177,7 +175,7 @@ contract WebAuthnTest is Test {
         bytes1 BE_not_set_BS_not_set = hex"05"; // hex(int('00000101', 2))
         customAuthenticatorData = authenticatorData;
         customAuthenticatorData[32] = BE_not_set_BS_not_set;
-        uint gasBefore = gasleft();
+        uint256 gasBefore = gasleft();
         ret = WebAuthn.verifySignature({
             challenge: challenge,
             authenticatorData: customAuthenticatorData,
@@ -190,7 +188,7 @@ contract WebAuthnTest is Test {
             x: publicKey[0],
             y: publicKey[1]
         });
-        uint gasUsed = gasBefore - gasleft();
+        uint256 gasUsed = gasBefore - gasleft();
         assert(gasUsed > 100_000); // didn't fail auth flags early check
         assertFalse(ret); // failed signature check instead
     }
