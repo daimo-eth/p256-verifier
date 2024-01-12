@@ -2,8 +2,8 @@
   "editor.formatOnSave": true,
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.codeActionsOnSave": {
-    "source.organizeImports": "never",
-    "source.fixAll": "explicit"
+    "source.organizeImports": false,
+    "source.fixAll": true
   },
   "editor.rulers": [80],
   "[solidity]": {

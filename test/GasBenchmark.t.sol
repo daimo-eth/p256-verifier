@@ -57,16 +57,18 @@ contract GasBenchmarkTest is Test {
         fcl_verifier = new FCLWrapperEIP7212();
     }
 
-    /**
-     * Checks a single test vector: signature rs, pubkey Q = (x,y).
-     */
-    function evaluate(address verifier_addr, bytes32 hash, uint256 r, uint256 s, uint256 x, uint256 y)
-        private
-        returns (bool valid, uint256 gasUsed)
-    {
+    /** Checks a single test vector: signature rs, pubkey Q = (x,y). */
+    function evaluate(
+        address verifier_addr,
+        bytes32 hash,
+        uint256 r,
+        uint256 s,
+        uint256 x,
+        uint256 y
+    ) private returns (bool valid, uint gasUsed) {
         bytes memory input = abi.encodePacked(hash, r, s, x, y);
 
-        uint256 gasBefore = gasleft();
+        uint gasBefore = gasleft();
         (bool success, bytes memory res) = verifier_addr.staticcall(input);
         gasUsed = gasBefore - gasleft();
 
@@ -81,7 +83,10 @@ contract GasBenchmarkTest is Test {
     uint256[] our_gasUsed;
     uint256[] fcl_gasUsed;
 
-    function logSummaryStatistics(uint256[] storage gasUsed, string memory tag) internal view {
+    function logSummaryStatistics(
+        uint256[] storage gasUsed,
+        string memory tag
+    ) internal view {
         uint256 avg = 0;
         uint256 min = 2 ** 256 - 1;
         uint256 max = 0;
@@ -119,8 +124,22 @@ contract GasBenchmarkTest is Test {
             uint256 s = uint256(vector.readBytes32(".s"));
             bytes32 hash = vector.readBytes32(".hash");
 
-            (bool our_result, uint256 our_gasUsed_test) = evaluate(address(our_verifier), hash, r, s, x, y);
-            (bool fcl_result, uint256 fcl_gasUsed_test) = evaluate(address(fcl_verifier), hash, r, s, x, y);
+            (bool our_result, uint256 our_gasUsed_test) = evaluate(
+                address(our_verifier),
+                hash,
+                r,
+                s,
+                x,
+                y
+            );
+            (bool fcl_result, uint256 fcl_gasUsed_test) = evaluate(
+                address(fcl_verifier),
+                hash,
+                r,
+                s,
+                x,
+                y
+            );
 
             assertEq(our_result, fcl_result, "results don't match");
 
