@@ -9,31 +9,11 @@ import "./P256.sol";
  *
  */
 library WebAuthn {
-    /// Checks whether substr occurs in str starting at a given byte offset.
-    function contains(string memory substr, string memory str, uint256 location) internal pure returns (bool) {
-        bytes memory substrBytes = bytes(substr);
-        bytes memory strBytes = bytes(str);
-
-        uint256 substrLen = substrBytes.length;
-        uint256 strLen = strBytes.length;
-
-        for (uint256 i = 0; i < substrLen; i++) {
-            if (location + i >= strLen) {
-                return false;
-            }
-
-            if (substrBytes[i] != strBytes[location + i]) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
     bytes1 constant AUTH_DATA_FLAGS_UP = 0x01; // Bit 0
     bytes1 constant AUTH_DATA_FLAGS_UV = 0x04; // Bit 2
     bytes1 constant AUTH_DATA_FLAGS_BE = 0x08; // Bit 3
     bytes1 constant AUTH_DATA_FLAGS_BS = 0x10; // Bit 4
+    bytes32 constant TYPE = keccak256(bytes('"type":"webauthn.get"'));
 
     /// Verifies the authFlags in authenticatorData. Numbers in inline comment
     /// correspond to the same numbered bullets in
@@ -110,24 +90,24 @@ library WebAuthn {
         bytes memory challenge,
         bytes memory authenticatorData,
         bool requireUserVerification,
-        string memory clientDataJSON,
-        uint256 challengeLocation,
-        uint256 responseTypeLocation,
+        bytes memory clientDataJSON,
         uint256 r,
         uint256 s,
         uint256 x,
         uint256 y
     ) internal view returns (bool) {
+        // bytes memory clientBytes = abi.encode(clientDataJSON);
         // 11. Verify that the value of C.type is the string webauthn.get.
-        string memory responseType = '"type":"webauthn.get"';
-        if (!contains(responseType, clientDataJSON, responseTypeLocation)) {
+        bytes memory _type = _slice(clientDataJSON, 1, 22);
+        if (keccak256(_type) != TYPE) {
             return false;
         }
 
         // 12. Verify that the value of C.challenge equals the base64url encoding of options.challenge.
         string memory challengeB64url = Base64URL.encode(challenge);
         string memory challengeProperty = string.concat('"challenge":"', challengeB64url, '"');
-        if (!contains(challengeProperty, clientDataJSON, challengeLocation)) {
+        bytes memory _challenge = _slice(clientDataJSON, 23, 23 + bytes(challengeProperty).length);
+        if (keccak256(_challenge) != keccak256(bytes(challengeProperty))) {
             return false;
         }
 
@@ -138,13 +118,29 @@ library WebAuthn {
             return false;
         }
 
-        // Skip 18.
+        // // Skip 18.
 
-        // 19. Let hash be the result of computing a hash over the cData using SHA-256.
-        bytes32 clientDataJSONHash = sha256(bytes(clientDataJSON));
+        // // 19. Let hash be the result of computing a hash over the cData using SHA-256.
+        bytes32 clientDataJSONHash = sha256(clientDataJSON);
 
-        // 20. Using credentialPublicKey, verify that sig is a valid signature over the binary concatenation of authData and hash.
+        // // 20. Using credentialPublicKey, verify that sig is a valid signature over the binary concatenation of authData and hash.
         bytes32 messageHash = sha256(abi.encodePacked(authenticatorData, clientDataJSONHash));
         return P256.verifySignature(messageHash, r, s, x, y);
+    }
+
+    function _slice(bytes memory data, uint256 start, uint256 end) internal pure returns (bytes memory) {
+        require(start <= end && end <= data.length, "Invalid slice indices");
+
+        bytes memory result = new bytes(end - start);
+        assembly {
+            let dataStart := add(data, 32) // Skip array length
+            let resultStart := add(result, 32) // Skip array length
+
+            for { let i := start } lt(i, end) { i := add(i, 1) } {
+                let _byte := mload(add(dataStart, i))
+                mstore(add(resultStart, sub(i, start)), _byte)
+            }
+        }
+        return result;
     }
 }
