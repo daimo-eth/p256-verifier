@@ -15,30 +15,6 @@ library WebAuthn {
     bytes1 constant AUTH_DATA_FLAGS_BS = 0x10; // Bit 4
     bytes32 constant TYPE = keccak256(bytes('"type":"webauthn.get"'));
 
-    function contains(
-        string memory substr,
-        string memory str,
-        uint256 location
-    ) internal pure returns (bool) {
-        bytes memory substrBytes = bytes(substr);
-        bytes memory strBytes = bytes(str);
-
-        uint256 substrLen = substrBytes.length;
-        uint256 strLen = strBytes.length;
-
-        for (uint256 i = 0; i < substrLen; i++) {
-            if (location + i >= strLen) {
-                return false;
-            }
-
-            if (substrBytes[i] != strBytes[location + i]) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
     /// Verifies the authFlags in authenticatorData. Numbers in inline comment
     /// correspond to the same numbered bullets in
     /// https://www.w3.org/TR/webauthn-2/#sctn-verifying-assertion.
@@ -130,8 +106,8 @@ library WebAuthn {
         // 12. Verify that the value of C.challenge equals the base64url encoding of options.challenge.
         string memory challengeB64url = Base64URL.encode(challenge);
         string memory challengeProperty = string.concat('"challenge":"', challengeB64url, '"');
-        // bytes memory _challenge = _slice(clientDataJSON, 23, 23 + bytes(challengeProperty).length);
-        if (!contains(challengeProperty, string(clientDataJSON), 23)) {
+        bytes memory _challenge = _slice(clientDataJSON, 23, 23 + bytes(challengeProperty).length);
+        if (keccak256(_challenge) != keccak256(bytes(challengeProperty))) {
             return false;
         }
 
