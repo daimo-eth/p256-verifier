@@ -129,8 +129,6 @@ library WebAuthn {
     }
 
     function _slice(bytes memory data, uint256 start, uint256 end) internal pure returns (bytes memory) {
-        require(start <= end && end <= data.length, "Invalid slice indices");
-
         bytes memory result = new bytes(end - start);
         assembly {
             let dataStart := add(data, 32) // Skip array length
