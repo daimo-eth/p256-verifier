@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 // Force a specific Solidity version for reproducibility.
-pragma solidity 0.8.21;
+pragma solidity 0.8.20;
 
 /**
  * This contract verifies P256 (secp256r1) signatures. It matches the exact
@@ -9,6 +9,23 @@ pragma solidity 0.8.21;
  * https://github.com/rdubois-crypto/FreshCryptoLib/tree/master/solidity
  **/
 contract P256Verifier {
+
+    struct CompDoubleZZ {
+        uint256 comp_U;
+        uint256 comp_V;
+        uint256 comp_W;
+        uint256 comp_S;
+        uint256 comp_M;
+    }
+
+    struct CompDaddAffine {
+        uint256 comp_P;
+        uint256 comp_PP;
+        uint256 comp_PPP;
+        uint256 comp_Q;
+        uint256 comp_R;
+    }
+
     /**
      * Precompiles don't use a function signature. The first byte of callldata
      * is the first byte of an input argument. In this case:
@@ -277,27 +294,28 @@ contract P256Verifier {
             return (x2, y2, 1, 1);
         }
 
-        uint256 comp_R = addmod(mulmod(y2, zzz1, p), p - y1, p); // R = S2 - y1 = y2*zzz1 - y1
-        uint256 comp_P = addmod(mulmod(x2, zz1, p), p - x1, p); // P = U2 - x1 = x2*zz1 - x1
+        CompDaddAffine memory comp;
+        comp.comp_R = addmod(mulmod(y2, zzz1, p), p - y1, p); // R = S2 - y1 = y2*zzz1 - y1
+        comp.comp_P = addmod(mulmod(x2, zz1, p), p - x1, p); // P = U2 - x1 = x2*zz1 - x1
 
-        if (comp_P != 0) { // X1 != X2
+        if (comp.comp_P != 0) { // X1 != X2
             // invariant(x1 != x2);
-            uint256 comp_PP = mulmod(comp_P, comp_P, p); // PP = P^2
-            uint256 comp_PPP = mulmod(comp_PP, comp_P, p); // PPP = P*PP
-            zz3 = mulmod(zz1, comp_PP, p); //// ZZ3 = ZZ1*PP
-            zzz3 = mulmod(zzz1, comp_PPP, p); //// ZZZ3 = ZZZ1*PPP
-            uint256 comp_Q = mulmod(x1, comp_PP, p); // Q = X1*PP
+            comp.comp_PP = mulmod(comp.comp_P, comp.comp_P, p); // PP = P^2
+            comp.comp_PPP = mulmod(comp.comp_PP, comp.comp_P, p); // PPP = P*PP
+            zz3 = mulmod(zz1, comp.comp_PP, p); //// ZZ3 = ZZ1*PP
+            zzz3 = mulmod(zzz1, comp.comp_PPP, p); //// ZZZ3 = ZZZ1*PPP
+            comp.comp_Q = mulmod(x1, comp.comp_PP, p); // Q = X1*PP
             x3 = addmod(
-                addmod(mulmod(comp_R, comp_R, p), p - comp_PPP, p), // (R^2) + (-PPP)
-                mulmod(minus_2modp, comp_Q, p), // (-2)*(Q)
+                addmod(mulmod(comp.comp_R, comp.comp_R, p), p - comp.comp_PPP, p), // (R^2) + (-PPP)
+                mulmod(minus_2modp, comp.comp_Q, p), // (-2)*(Q)
                 p
             ); // R^2 - PPP - 2*Q
             y3 = addmod(
-                mulmod(addmod(comp_Q, p - x3, p), comp_R, p), //(Q+(-x3))*R
-                mulmod(p - y1, comp_PPP, p), // (-y1)*PPP
+                mulmod(addmod(comp.comp_Q, p - x3, p), comp.comp_R, p), //(Q+(-x3))*R
+                mulmod(p - y1, comp.comp_PPP, p), // (-y1)*PPP
                 p
             ); // R*(Q-x3) - y1*PPP
-        } else if (comp_R == 0) { // X1 == X2 and Y1 == Y2
+        } else if (comp.comp_R == 0) { // X1 == X2 and Y1 == Y2
             // invariant(x1 == x2 && y1 == y2);
 
             // Must be affine because (X2, Y2) is affine.
@@ -316,19 +334,23 @@ contract P256Verifier {
      * Handles point at infinity gracefully
      */
     function ecZZ_double_zz(uint256 x1,
-        uint256 y1, uint256 zz1, uint256 zzz1) internal pure returns (uint256 x3, uint256 y3, uint256 zz3, uint256 zzz3) {
+        uint256 y1, uint256 zz1, uint256 zzz1) internal pure returns (uint256, uint256, uint256, uint256) {
         if (ecZZ_IsInf(zz1, zzz1)) return ecZZ_PointAtInf();
     
-        uint256 comp_U = mulmod(2, y1, p); // U = 2*Y1
-        uint256 comp_V = mulmod(comp_U, comp_U, p); // V = U^2
-        uint256 comp_W = mulmod(comp_U, comp_V, p); // W = U*V
-        uint256 comp_S = mulmod(x1, comp_V, p); // S = X1*V
-        uint256 comp_M = addmod(mulmod(3, mulmod(x1, x1, p), p), mulmod(a, mulmod(zz1, zz1, p), p), p); //M = 3*(X1)^2 + a*(zz1)^2
+        CompDoubleZZ memory comp;
+        comp.comp_U = mulmod(2, y1, p); // U = 2*Y1
+        comp.comp_V = mulmod(comp.comp_U, comp.comp_U, p); // V = U^2
+        comp.comp_W = mulmod(comp.comp_U, comp.comp_V, p); // W = U*V
+        comp.comp_S = mulmod(x1, comp.comp_V, p); // S = X1*V
+        comp.comp_M = addmod(mulmod(3, mulmod(x1, x1, p), p), mulmod(a, mulmod(zz1, zz1, p), p), p); //M = 3*(X1)^2 + a*(zz1)^2
         
-        x3 = addmod(mulmod(comp_M, comp_M, p), mulmod(minus_2modp, comp_S, p), p); // M^2 + (-2)*S
-        y3 = addmod(mulmod(comp_M, addmod(comp_S, p - x3, p), p), mulmod(p - comp_W, y1, p), p); // M*(S+(-X3)) + (-W)*Y1
-        zz3 = mulmod(comp_V, zz1, p); // V*ZZ1
-        zzz3 = mulmod(comp_W, zzz1, p); // W*ZZZ1
+        uint256 x3 = addmod(mulmod(comp.comp_M, comp.comp_M, p), mulmod(minus_2modp, comp.comp_S, p), p); // M^2 + (-2)*S
+        return( 
+            x3, // M^2 + (-2)*S
+            addmod(mulmod(comp.comp_M, addmod(comp.comp_S, p - x3, p), p), mulmod(p - comp.comp_W, y1, p), p), // M*(S+(-X3)) + (-W)*Y1
+            mulmod(comp.comp_V, zz1, p), // V*ZZ1
+            mulmod(comp.comp_W, zzz1, p) // W*ZZZ1
+        );
     }
 
     /**
