@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.21;
+pragma solidity 0.8.23;
 
 import {Test, console2} from "forge-std/Test.sol";
 import {stdJson} from "forge-std/StdJson.sol";
@@ -177,7 +177,7 @@ contract WebAuthnTest is Test {
         bytes1 BE_not_set_BS_not_set = hex"05"; // hex(int('00000101', 2))
         customAuthenticatorData = authenticatorData;
         customAuthenticatorData[32] = BE_not_set_BS_not_set;
-        uint gasBefore = gasleft();
+        uint256 gasBefore = gasleft();
         ret = WebAuthn.verifySignature({
             challenge: challenge,
             authenticatorData: customAuthenticatorData,
@@ -190,7 +190,7 @@ contract WebAuthnTest is Test {
             x: publicKey[0],
             y: publicKey[1]
         });
-        uint gasUsed = gasBefore - gasleft();
+        uint256 gasUsed = gasBefore - gasleft();
         assert(gasUsed > 100_000); // didn't fail auth flags early check
         assertFalse(ret); // failed signature check instead
     }
