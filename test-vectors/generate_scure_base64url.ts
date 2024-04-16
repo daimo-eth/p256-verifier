@@ -26,7 +26,7 @@ async function main() {
   const lines = vectors.map((v) => {
     const data = Uint8Array.from(Buffer.from(v.data, "hex"));
     return JSON.stringify({
-      data: v.data,
+      data: `0x${v.data}`,
       base64url: base64urlnopad.encode(data),
     });
   });
