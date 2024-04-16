@@ -28,13 +28,16 @@ async function main() {
   const wycheproofVectors = wycheproofVectorsJSONL
     .split("\n")
     .map((line) => JSON.parse(line) as Vector);
+  console.log(`Loaded ${wycheproofVectors.length} Wycheproof vectors`);
 
   const randomVectors = randomVectorsJSONL
     .split("\n")
     .map((line) => JSON.parse(line) as Vector);
+  console.log(`Loaded ${randomVectors.length} random vectors`);
 
   const vectors = [...wycheproofVectors, ...randomVectors];
 
+  console.log(`Testing ${vectors.length} vectors`);
   for (const vector of vectors) {
     // Convert hex strings to Uint8Arrays
     const x = Buffer.from(vector.x, "hex");
@@ -73,7 +76,7 @@ async function main() {
     // Verify signature using @noble/curves
     const pub = new Uint8Array([0x04, ...x, ...y]);
     const resultNoble = p256.verify(sig, hash, pub);
-    assert(resultSubtle === vector.valid, "@noble/curves " + vector.comment);
+    assert(resultNoble === vector.valid, "@noble/curves " + vector.comment);
   }
 }
 
