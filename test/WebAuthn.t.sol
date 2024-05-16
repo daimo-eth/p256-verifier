@@ -21,8 +21,6 @@ contract WebAuthnTest is Test {
         0x32e005a53ae49a96ac88c715243638dd5c985fbd463c727d8eefd05bee4e2570;
     uint256 s =
         0x7a4fef4d0b11187f95f69eefbb428df8ac799bbd9305066b1e9c9fe9a5bcf8c4;
-    uint256 challengeLocation = 23;
-    uint256 responseTypeLocation = 1;
 
     function setUp() public {
         // Deploy P256 Verifier
@@ -36,8 +34,6 @@ contract WebAuthnTest is Test {
             authenticatorData: authenticatorData,
             requireUserVerification: false,
             clientDataJSON: clientDataJSON,
-            challengeLocation: challengeLocation,
-            responseTypeLocation: responseTypeLocation,
             r: r,
             s: s,
             x: publicKey[0],
@@ -46,21 +42,16 @@ contract WebAuthnTest is Test {
         assertTrue(ret);
     }
 
-    // Test failures in contains() function
-    function testContains() public {
-        bool ret;
-        uint256 customChallengeLocation = challengeLocation;
-        uint256 customResponseTypeLocation = responseTypeLocation;
-
-        // Wrong challengeLocation
-        customChallengeLocation = 50;
-        ret = WebAuthn.verifySignature({
+    // Test startsWith is implemented correctly
+    function testStartsWith() public {
+        // End too early
+        string
+            memory customClientDataJSON = '{"type":"webauthn.get","challenge":';
+        bool ret = WebAuthn.verifySignature({
             challenge: challenge,
             authenticatorData: authenticatorData,
-            requireUserVerification: false,
-            clientDataJSON: clientDataJSON,
-            challengeLocation: customChallengeLocation,
-            responseTypeLocation: customResponseTypeLocation,
+            requireUserVerification: true,
+            clientDataJSON: customClientDataJSON,
             r: r,
             s: s,
             x: publicKey[0],
@@ -68,15 +59,13 @@ contract WebAuthnTest is Test {
         });
         assertFalse(ret);
 
-        // challengeLocation out of bounds of string
-        customChallengeLocation = 100;
+        // missing { in beginning
+        customClientDataJSON = '"type":"webauthn.get","challenge":"dGVzdA","origin":"https://funny-froyo-3f9b75.netlify.app"}';
         ret = WebAuthn.verifySignature({
             challenge: challenge,
             authenticatorData: authenticatorData,
-            requireUserVerification: false,
-            clientDataJSON: clientDataJSON,
-            challengeLocation: customChallengeLocation,
-            responseTypeLocation: customResponseTypeLocation,
+            requireUserVerification: true,
+            clientDataJSON: customClientDataJSON,
             r: r,
             s: s,
             x: publicKey[0],
@@ -84,16 +73,13 @@ contract WebAuthnTest is Test {
         });
         assertFalse(ret);
 
-        // Wrong responseTypeLocation
-        customChallengeLocation = 23;
-        customResponseTypeLocation = 0;
+        // missing closing quote on challenge
+        customClientDataJSON = '{"type":"webauthn.get","challenge":"dGVzdA,"origin":"https://funny-froyo-3f9b75.netlify.app"}';
         ret = WebAuthn.verifySignature({
             challenge: challenge,
             authenticatorData: authenticatorData,
-            requireUserVerification: false,
-            clientDataJSON: clientDataJSON,
-            challengeLocation: customChallengeLocation,
-            responseTypeLocation: customResponseTypeLocation,
+            requireUserVerification: true,
+            clientDataJSON: customClientDataJSON,
             r: r,
             s: s,
             x: publicKey[0],
@@ -114,8 +100,6 @@ contract WebAuthnTest is Test {
             authenticatorData: customAuthenticatorData,
             requireUserVerification: false,
             clientDataJSON: clientDataJSON,
-            challengeLocation: challengeLocation,
-            responseTypeLocation: responseTypeLocation,
             r: r,
             s: s,
             x: publicKey[0],
@@ -130,8 +114,6 @@ contract WebAuthnTest is Test {
             authenticatorData: customAuthenticatorData,
             requireUserVerification: false,
             clientDataJSON: clientDataJSON,
-            challengeLocation: challengeLocation,
-            responseTypeLocation: responseTypeLocation,
             r: r,
             s: s,
             x: publicKey[0],
@@ -147,8 +129,6 @@ contract WebAuthnTest is Test {
             authenticatorData: customAuthenticatorData,
             requireUserVerification: true,
             clientDataJSON: clientDataJSON,
-            challengeLocation: challengeLocation,
-            responseTypeLocation: responseTypeLocation,
             r: r,
             s: s,
             x: publicKey[0],
@@ -165,8 +145,6 @@ contract WebAuthnTest is Test {
             authenticatorData: customAuthenticatorData,
             requireUserVerification: false,
             clientDataJSON: clientDataJSON,
-            challengeLocation: challengeLocation,
-            responseTypeLocation: responseTypeLocation,
             r: r,
             s: s,
             x: publicKey[0],
@@ -183,8 +161,6 @@ contract WebAuthnTest is Test {
             authenticatorData: customAuthenticatorData,
             requireUserVerification: false,
             clientDataJSON: clientDataJSON,
-            challengeLocation: challengeLocation,
-            responseTypeLocation: responseTypeLocation,
             r: r,
             s: s,
             x: publicKey[0],
@@ -201,8 +177,6 @@ contract WebAuthnTest is Test {
             authenticatorData: authenticatorData,
             requireUserVerification: true,
             clientDataJSON: clientDataJSON,
-            challengeLocation: challengeLocation,
-            responseTypeLocation: responseTypeLocation,
             r: r,
             s: s,
             x: publicKey[0],
