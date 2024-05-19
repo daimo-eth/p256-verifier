@@ -6,6 +6,20 @@ import {stdJson} from "forge-std/StdJson.sol";
 import {P256} from "../src/P256.sol";
 import {P256Verifier} from "../src/P256Verifier.sol";
 
+contract FakePrecompile {
+    fallback(bytes calldata input) external returns (bytes memory) {
+        (bool success, bytes memory ret) = P256.VERIFIER.staticcall(input);
+        assert(success);
+
+        uint256 retUint = abi.decode(ret, (uint256));
+        if (retUint == 1) {
+            return abi.encode(1);
+        } else {
+            return abi.encode();
+        }
+    }
+}
+
 contract P256Test is Test {
     uint256[2] public pubKey;
 
@@ -56,5 +70,50 @@ contract P256Test is Test {
 
         res = P256.verifySignature(hash, r, s, pubKey[0], pubKey[1]);
         assertEq(res, true);
+    }
+
+    function testPrecompileUsage() public {
+        uint256 r = 0x01655c1753db6b61a9717e4ccc5d6c4bf7681623dd54c2d6babc55125756661c;
+        uint256 s = 7033802732221576339889804108463427183539365869906989872244893535944704590394;
+
+        bytes32 hash = 0x267f9ea080b54bbea2443dff8aa543604564329783b6a515c6663a691c555490;
+
+        uint gasBefore = gasleft();
+        bool res = P256.verifySignatureAllowMalleability(
+            hash,
+            r,
+            s,
+            pubKey[0],
+            pubKey[1]
+        );
+        assertEq(res, true);
+        uint gasUsedFallback = gasBefore - gasleft();
+        assert(gasUsedFallback > 100_000); // no precompile, used Solidity implementation
+
+        vm.etch(P256.PRECOMPILE, type(FakePrecompile).runtimeCode);
+
+        gasBefore = gasleft();
+        res = P256.verifySignatureAllowMalleability(
+            hash,
+            r,
+            s,
+            pubKey[0],
+            pubKey[1]
+        );
+        assertEq(res, true);
+        uint gasUsedPrecompile = gasBefore - gasleft();
+        assert(gasUsedPrecompile < gasUsedFallback); // precompile, used precompile
+
+        gasBefore = gasleft();
+        res = P256.verifySignatureAllowMalleability(
+            hash,
+            r + 1,
+            s,
+            pubKey[0],
+            pubKey[1]
+        );
+        assertEq(res, false);
+        uint gasUsedInvalidSignature = gasBefore - gasleft();
+        assert(gasUsedInvalidSignature > gasUsedFallback); // invalid signature, used precompile and failed, so fall back to Solidity implementation and failed with nearly double gas
     }
 }
