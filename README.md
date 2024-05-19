@@ -1,15 +1,17 @@
 ## `P256Verifier` Solidity contract
 
-> **This is currently the only audited, open source P256 verifier contract.** It's not quite the lowest-gas verifier, but it's close.
-> This implementation uses no `unsafe` or assembly to maximize simplicity and safety.
+> **This is currently the only audited, open source P256 verifier.** It's not quite the lowest-gas implementation, but it's close.
+> Our implementation uses no `unsafe` or assembly to maximize simplicity and security.
 
 Verifying a signature costs about 330k gas. Pure function, no precomputation.
 
-The contract matches the [EIP-7212 precompile spec](https://eips.ethereum.org/EIPS/eip-7212).
+This contract matches the [EIP-7212 precompile spec](https://eips.ethereum.org/EIPS/eip-7212).
 
-**The contract exists at a deterministic CREATE2 address. You can use it on any EVM chain.** The secp256r1 elliptic curve, aka P256, is used by security keys like Yubikey, Apple's Secure Enclave, the Android Keystore, and WebAuthn, aka passkeys. P256 verification enables hardware-based signing keys, smoother UX, and passkey backup.
+**It exists at a deterministic CREATE2 address: `0xc2b78104907F722DABAc4C69f826a522B2754De4`. You can use it on any EVM chain.** So far, we've deployed it on Ethereum L1, OP Mainnet, Base, Arbitrum and others. You can deploy to any EVM chain using `forge script`.
 
-This implementation was inspired by [Renaud Dubois/Ledger's implementation](https://github.com/rdubois-crypto/FreshCryptoLib) and [blst](https://github.com/supranational/blst).
+The secp256r1 elliptic curve, aka P256, is used by security keys like Yubikey, Apple's Secure Enclave, the Android Keystore, and WebAuthn, aka passkeys. P256 verification enables secure hardware-based signing keys, great UX and passkey backup.
+
+Our implementation was inspired by [Renaud Dubois/Ledger's FCL library](https://github.com/rdubois-crypto/FreshCryptoLib) and [blst](https://github.com/supranational/blst).
 
 ## Usage
 
