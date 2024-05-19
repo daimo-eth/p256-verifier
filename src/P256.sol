@@ -3,6 +3,8 @@ pragma solidity 0.8.21;
 
 /**
  * Helper library for external contracts to verify P256 signatures.
+ * Tries to use RIP-7212 precompile if available on the chain, and if not falls
+ * back to more expensive Solidity implementation.
  **/
 library P256 {
     address constant PRECOMPILE = address(0x100);
@@ -18,7 +20,12 @@ library P256 {
         bytes memory args = abi.encode(message_hash, r, s, x, y);
 
         (bool success, bytes memory ret) = PRECOMPILE.staticcall(args);
-        if (success && ret.length > 0) return abi.decode(ret, (uint256)) == 1;
+        if (success && ret.length > 0) {
+            // RIP-7212 precompile returns 1 if signature is valid
+            // and nothing if signature is invalid, so those fall back to
+            // more expensive Solidity implementation.
+            return abi.decode(ret, (uint256)) == 1;
+        }
 
         (bool fallbackSuccess, bytes memory fallbackRet) = VERIFIER.staticcall(
             args
