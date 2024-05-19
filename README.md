@@ -1,14 +1,17 @@
 ## `P256Verifier` Solidity contract
 
-This repo implements a gas-efficient, audited P256 signature verifier. Verifying a signature costs about 330k gas. Pure function, no precomputation.
+> **This is currently the only audited, open source P256 verifier.** It's not quite the lowest-gas implementation, but it's close.
+> Our implementation uses no `unsafe` or assembly to maximize simplicity and security.
 
-The contract matches the proposed [EIP-7212 precompile](https://eips.ethereum.org/EIPS/eip-7212), letting us ship it as a [progressive precompile](https://ethereum-magicians.org/t/progressive-precompiles-via-create2-shadowing/).
+Verifying a signature costs about 330k gas. Pure function, no precomputation.
 
-**The contract exists at a deterministic CREATE2 address. You can use it on any EVM chain. If the chain implements EIP-7212 at the same CREATE2 address as this contract, you pay ~3.4k gas. If not, you pay ~330k gas. Either way, the contract address and results are identical.** This is particularly beneficial for chains that want to maintain full EVM compatibility while adding this new precompiles (upto gas schedules).
+This contract matches the [EIP-7212 precompile spec](https://eips.ethereum.org/EIPS/eip-7212).
 
-The secp256r1 elliptic curve, aka P256, is used by high-quality consumer enclaves including Yubikey, Apple's Secure Enclave, the Android Keystore, and WebAuthn. P256 verification is especially useful for contract wallets, enabling hardware-based signing keys and smoother UX.
+**It exists at a deterministic CREATE2 address: `0xc2b78104907F722DABAc4C69f826a522B2754De4`. You can use it on any EVM chain.** So far, we've deployed it on Ethereum L1, OP Mainnet, Base, Arbitrum and others. You can deploy to any EVM chain using `forge script`.
 
-This implementation was inspired by [Renaud Dubois/Ledger's implementation](https://github.com/rdubois-crypto/FreshCryptoLib) and [blst](https://github.com/supranational/blst).
+The secp256r1 elliptic curve, aka P256, is used by security keys like Yubikey, Apple's Secure Enclave, the Android Keystore, and WebAuthn, aka passkeys. P256 verification enables secure hardware-based signing keys, great UX and passkey backup.
+
+Our implementation was inspired by [Renaud Dubois/Ledger's FCL library](https://github.com/rdubois-crypto/FreshCryptoLib) and [blst](https://github.com/supranational/blst).
 
 ## Usage
 
