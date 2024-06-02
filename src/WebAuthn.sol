@@ -8,24 +8,23 @@ import "./P256.sol";
  * Helper library for external contracts to verify WebAuthn signatures.
  **/
 library WebAuthn {
-    /// Checks whether substr occurs in str starting at a given byte offset.
-    function contains(
-        string memory substr,
-        string memory str,
-        uint256 location
+    /// Checks whether prefix occurs in the beginning of str.
+    function startsWith(
+        string memory prefix,
+        string memory str
     ) internal pure returns (bool) {
-        bytes memory substrBytes = bytes(substr);
+        bytes memory prefixBytes = bytes(prefix);
         bytes memory strBytes = bytes(str);
 
-        uint256 substrLen = substrBytes.length;
+        uint256 prefixLen = prefixBytes.length;
         uint256 strLen = strBytes.length;
 
-        for (uint256 i = 0; i < substrLen; i++) {
-            if (location + i >= strLen) {
+        for (uint256 i = 0; i < prefixLen; i++) {
+            if (i >= strLen) {
                 return false;
             }
 
-            if (substrBytes[i] != strBytes[location + i]) {
+            if (prefixBytes[i] != strBytes[i]) {
                 return false;
             }
         }
@@ -126,8 +125,6 @@ library WebAuthn {
         bytes memory authenticatorData,
         bool requireUserVerification,
         string memory clientDataJSON,
-        uint256 challengeLocation,
-        uint256 responseTypeLocation,
         uint256 r,
         uint256 s,
         uint256 x,
@@ -142,20 +139,15 @@ library WebAuthn {
         }
 
         // Check that response is for an authentication assertion
-        string memory responseType = '"type":"webauthn.get"';
-        if (!contains(responseType, clientDataJSON, responseTypeLocation)) {
-            return false;
-        }
-
-        // Check that challenge is in the clientDataJSON
+        // and that the challenge is in the clientDataJSON
+        // as per https://www.w3.org/TR/webauthn-2/#clientdatajson-serialization
         string memory challengeB64url = Base64URL.encode(challenge);
-        string memory challengeProperty = string.concat(
-            '"challenge":"',
+        string memory prefix = string.concat(
+            '{"type":"webauthn.get","challenge":"',
             challengeB64url,
             '"'
         );
-
-        if (!contains(challengeProperty, clientDataJSON, challengeLocation)) {
+        if (!startsWith(prefix, clientDataJSON)) {
             return false;
         }
 

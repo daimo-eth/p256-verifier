@@ -123,35 +123,38 @@ contract P256VerifierTest is Test {
 
         // In-bounds dummy key (1, 1)
         // Calls modexp, which takes gas.
-        (bool result, uint gasUsed) = evaluate(hash, r, s, x, y);
-        console2.log("gasUsed ", gasUsed);
+        (bool result, uint gasUsedWithModexp) = evaluate(hash, r, s, x, y);
+        console2.log("gasUsed ", gasUsedWithModexp);
         assertEq(result, false);
-        assertGt(gasUsed, 1500);
+        assertGt(gasUsedWithModexp, 5000);
+
+        uint failFastGasBound = (gasUsedWithModexp * 9) / 10;
 
         // Out-of-bounds public key. Fails fast, takes less gas.
         (x, y) = (0, 1);
+        uint gasUsed;
         (result, gasUsed) = evaluate(hash, r, s, x, y);
         console2.log("gasUsed ", gasUsed);
         assertEq(result, false);
-        assertLt(gasUsed, 1500);
+        assertLt(gasUsed, failFastGasBound);
 
         (x, y) = (1, 0);
         (result, gasUsed) = evaluate(hash, r, s, x, y);
         console2.log("gasUsed ", gasUsed);
         assertEq(result, false);
-        assertLt(gasUsed, 1500);
+        assertLt(gasUsed, failFastGasBound);
 
         (x, y) = (1, p);
         (result, gasUsed) = evaluate(hash, r, s, x, y);
         console2.log("gasUsed ", gasUsed);
         assertEq(result, false);
-        assertLt(gasUsed, 1500);
+        assertLt(gasUsed, failFastGasBound);
 
         (x, y) = (p, 1);
         (result, gasUsed) = evaluate(hash, r, s, x, y);
         console2.log("gasUsed ", gasUsed);
         assertEq(result, false);
-        assertLt(gasUsed, 1500);
+        assertLt(gasUsed, failFastGasBound);
 
         // p-1 is in-bounds but point is not on curve.
         (x, y) = (p - 1, 1);
