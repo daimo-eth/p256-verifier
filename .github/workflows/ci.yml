@@ -35,6 +35,9 @@ jobs:
   test-generate-vectors:
     runs-on: ubuntu-latest
     steps:
+      - name: Gas Report
+        uses: saifyoussuf/foundry-gas-reporter-action@v1
+        if: always()
       - uses: actions/checkout@v3
 
       - uses: actions/setup-node@v3
